@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-28f">
+<meta name="app-version" content="2026-09-28h">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -635,7 +635,7 @@ function fixSpeech(text) {
 }
 const Sound = (() => {
   let ctx = null, master, musicGain, musicBus, sfxGain, noiseBuf, timer = null;
-  let musicOn = store.get('zw5.music', false);   // background music is off until turned on (sound effects always play)
+  let musicOn = store.get('zw.bgm2', false);   // background music is off until turned on (sound effects always play)
   let ducked = false, root = 0, step = 0, melodyIdx = 7;
   const PENTA = [0, 2, 4, 7, 9];
   const f = semi => 261.63 * Math.pow(2, semi / 12);
@@ -697,7 +697,7 @@ const Sound = (() => {
   }
   function setMood(semi) { root = semi || 0; }
   function setMusic(on) {
-    musicOn = on; store.set('zw5.music', on);
+    musicOn = on; store.set('zw.bgm2', on);
     if (ctx) musicGain.gain.setTargetAtTime(on ? (ducked ? 0 : .2) : 0, ctx.currentTime, .15);
   }
   /* speech on: music goes fully silent. Speech off: music comes back only after a short pause,
@@ -951,6 +951,7 @@ const _mam = {};
 function MA(color) { return _mam[color] || (_mam[color] = new THREE.MeshToonMaterial({ color: col(color), gradientMap: ANIME_RAMP })); }
 const LINE = new THREE.MeshBasicMaterial({ color: col('#5A3E30'), side: THREE.BackSide });
 function animeize(root) {   // every part of a person: flat anime colour; head, body and limbs get a fine line
+  if (root.userData.head) root.userData.head.traverse(o => { if (o.isMesh) { o.receiveShadow = false; o.castShadow = false; } });   // a clean face: no shadow streaks from the hair
   root.traverse(o => {
     if (!o.isMesh || o.userData.ink || !o.material) return;
     const m = o.material; if (Array.isArray(m) || m.transparent || (m.emissiveIntensity && m.emissive && m.emissive.getHex())) return;
@@ -1089,10 +1090,10 @@ function drawBoard(v) {
   room.userData.shelf = S;
   // classroom: green lower wall, blackboard, window, clock
   const dado = box(90, 6, .2, '#8FB39A', 0, -2, -11.95); dado.receiveShadow = false; dado.castShadow = false; room.add(dado);
-  room.add(box(5.5, 3.4, .3, '#8A5A3B', -7.75, 5.6, -11.8));
-  const board = new THREE.Mesh(new THREE.PlaneGeometry(5, 2.9), new THREE.MeshStandardMaterial({ map: BOARD_TEX, roughness: .9 }));
-  board.position.set(-7.75, 5.6, -11.5); room.add(board);
-  room.add(box(5.5, .25, .6, '#8A5A3B', -7.75, 3.8, -11.5));
+  room.add(box(4.4, 2.8, .3, '#8A5A3B', -8.1, 5.6, -11.8));
+  const board = new THREE.Mesh(new THREE.PlaneGeometry(4, 2.4), new THREE.MeshStandardMaterial({ map: BOARD_TEX, roughness: .9 }));
+  board.position.set(-8.1, 5.6, -11.62); room.add(board);
+  room.add(box(4.4, .2, .5, '#8A5A3B', -8.1, 4.12, -11.5));
   const win = grp(box(8, 6, .3, '#F4F4F2', 0, 0, 0), box(7.4, 5.4, .1, '#BFE3F0', 0, 0, .25), box(.25, 5.4, .1, '#F4F4F2', 0, 0, .4), box(7.4, .25, .1, '#F4F4F2', 0, 0, .4));
   win.scale.setScalar(.7); room.add(at(win, 8.6, 6, -11.7));
   const wclock = grp(cyl(1, 1, .3, '#F4F4F2', 0, 0, 0, 20), box(.08, .7, .05, '#3A2E28', 0, .3, .18), rot(box(.08, .5, .05, '#3A2E28', .2, .05, .18), 0, 0, -1.2));
