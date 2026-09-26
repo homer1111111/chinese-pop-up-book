@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
+<meta name="app-version" content="2026-09-26s">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第五册 立体绘本</title>
@@ -275,8 +276,8 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 #endBox .acts{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
 
 /* intro */
-#intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:18px;
-  background:radial-gradient(ellipse at 50% 40%,rgba(47,93,98,.55),rgba(20,32,34,.92));color:var(--paper);text-align:center;padding:20px}
+#intro{position:fixed;inset:0;z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;padding-top:max(9vh,60px) !important;gap:18px;
+  background:radial-gradient(ellipse at 50% 42%,rgba(24,44,54,.32),rgba(24,44,54,.72));color:var(--paper);text-align:center;padding:20px;text-shadow:0 2px 10px rgba(0,0,0,.45)}   /* the school gate shows through */
 #intro .vol{font-size:clamp(18px,3vw,24px);letter-spacing:.3em;opacity:.85}
 #intro h1{margin:0;font-size:clamp(46px,9vw,92px);font-weight:700;letter-spacing:.08em;line-height:1.1}
 #intro h1 small{display:block;font-size:.34em;letter-spacing:.2em;font-weight:400;margin-top:12px;opacity:.9}
@@ -549,7 +550,7 @@ body.locked .lockable{opacity:.45;pointer-events:none}
   <div class="vol">暨南《中文》</div>
   <h1>立体绘本<small>走进中文学校，选一册</small></h1>
   <button class="btn main" id="startBtn">走进学校</button>
-  <div class="note">点一下开始，会有音乐和朗读声音<br><span style="opacity:.6">版本 2026-09-26q · 少（shào）、衰（shuāi）读音</span></div>
+  <div class="note">点一下开始，会有音乐和朗读声音</div>
 </div>
 <div id="loadErr" class="hidden">需要连上网络才能载入 3D 引擎（three.js、GSAP）。<br>请确认网络连接后刷新这一页。</div>
 <script>
@@ -1098,7 +1099,7 @@ async function goCampus(first) {
     for (let v = 1; v <= 5; v++) BLD[v].scale.setScalar(.01);
     LASTFLAG.userData.show = LASTFLAG.visible; LASTFLAG.visible = false;      // the flag comes with the buildings
     KIDC.position.set(0, 0, 44); KIDC.rotation.y = 0;
-    const c = GATE_CAM(); camTo(c.pos, c.look, 0);
+    const c = GATE_CAM(); camTo(c.pos, c.look, 1.4, 'power2.inOut');     // from the start screen down to the gate
     campusHint('点一下校门，走进学校');
   } else {
     APP.campusStage = 'yard';
@@ -8407,8 +8408,14 @@ async function boot() {
   try { await Promise.race([document.fonts.load(`700 40px "LXGW WenKai"`), wait(2500)]); } catch (e) { }
   buildCampus(); makePupil();
   setVolume(VOLS[store.get('zw.vol', 5)] ? store.get('zw.vol', 5) : 5);
+  // behind the start screen: the school gate (not the classroom), exactly where the story begins
+  CAMPUS.visible = true; room.visible = false; books.forEach(b => b.visible = false);
+  scene.fog.near = 220; scene.fog.far = 600; camera.far = 800; camera.updateProjectionMatrix();
+  setLight(CAMPUS_LIGHT, 0);
+  for (let v = 1; v <= 5; v++) BLD[v].scale.setScalar(.01);
+  KIDC.position.set(4.2, 0, 40); KIDC.rotation.y = -.3;      // beside the path, so the school's name is readable
+  camTo(cw(0, 4, 66), cw(0, 13, 26), 0);        // gate in the lower half, the title above it
   drawMusicBtn();
-  camBase.set(0, 16, 34); lookBase.set(0, 3, -10);
   frame();
   // intro: pick a volume, then the study opens on that volume's shelf
   $('startBtn').onclick = () => {
