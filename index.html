@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-26v">
+<meta name="app-version" content="2026-09-26w">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -1104,6 +1104,7 @@ function OVER_CAM() {   // far enough back that the whole arc of buildings fits 
 async function fade(on) { $('fader').classList.add('on'); await tw($('fader'), { opacity: on ? 1 : 0, duration: .45 }); if (!on) $('fader').classList.remove('on'); }
 async function goCampus(first) {
   setState(ST.CAMPUS); showUI('none'); setLight(CAMPUS_LIGHT, first ? 0 : .6); Sound.setMood(0);
+  document.title = SERIES_TITLE;
   scene.fog.near = 220; scene.fog.far = 600; camera.far = 800; camera.updateProjectionMatrix();   // the campus is big and open
   CAMPUS.visible = true; room.visible = false; books.forEach(b => b.visible = false);
   refreshCampus(); OB.visible = false;
@@ -1400,8 +1401,10 @@ function drawMusicBtn() {
 /* =====================================================================
    Bookshelf → desk → cover → acts
    ===================================================================== */
+const SERIES_TITLE = '《中文》第一至五册 立体有声绘本';
 async function goShelf(first) {
   setState(ST.BOOKSHELF); $('campusBar').classList.add('hidden');
+  document.title = '《中文》第' + CN_NUM[VOL] + '册 · 立体有声绘本';
   CAMPUS.visible = false; room.visible = true; books.forEach(b => b.visible = true);
   if (PUPIL) { PUPIL.visible = true; if (Math.abs(PUPIL.position.x - 7.4) > .2) { walkTo(PUPIL, 7.4, -7.4, 1).then(() => { PUPIL.rotation.y = -.5; }); } }
   scene.fog.near = 60; scene.fog.far = 140; camera.far = 220; camera.updateProjectionMatrix();
@@ -7044,7 +7047,7 @@ function setVolume(v) {
   DATA.forEach((d, i) => makeBook(d.n, i));
   renderChips();
   const name = '第' + CN_NUM[v] + '册'; drawBoard(v);
-  $('volName').textContent = name; document.title = '《中文》' + name + ' · 立体有声绘本';
+  $('volName').textContent = name; 
   return true;
 }
 function volButtons(box, onPick) {
