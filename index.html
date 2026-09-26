@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-26t">
+<meta name="app-version" content="2026-09-26u">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第五册 立体绘本</title>
@@ -558,7 +558,7 @@ body.locked .lockable{opacity:.45;pointer-events:none}
   <div class="vol">暨南《中文》</div>
   <h1>立体绘本<small>走进中文学校，选一册</small></h1>
   <button class="btn main" id="startBtn">走进学校</button>
-  <div class="note">点一下开始，会有音乐和朗读声音</div>
+  <div class="note">点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐</div>
 </div>
 <div id="loadErr" class="hidden">需要连上网络才能载入 3D 引擎（three.js、GSAP）。<br>请确认网络连接后刷新这一页。</div>
 <script>
@@ -630,7 +630,7 @@ function fixSpeech(text) {
 }
 const Sound = (() => {
   let ctx = null, master, musicGain, musicBus, sfxGain, noiseBuf, timer = null;
-  let musicOn = store.get('zw5.music', true);
+  let musicOn = store.get('zw5.music', false);   // background music is off until turned on (sound effects always play)
   let ducked = false, root = 0, step = 0, melodyIdx = 7;
   const PENTA = [0, 2, 4, 7, 9];
   const f = semi => 261.63 * Math.pow(2, semi / 12);
