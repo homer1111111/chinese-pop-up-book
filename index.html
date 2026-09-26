@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-26s">
+<meta name="app-version" content="2026-09-26t">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第五册 立体绘本</title>
@@ -291,6 +291,10 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 .volBtn{white-space:nowrap;background:rgba(251,243,226,.9);color:var(--ink);border-radius:16px;padding:3px 12px;font-size:15px;font-family:var(--ui)}
 #volBox{width:min(460px,100%);background:var(--paper);border-radius:22px;padding:22px 20px 20px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4)}
 #volBox h3{margin:0 0 14px;font-size:24px}
+#badgeBox{width:min(440px,100%);background:var(--paper);border-radius:22px;padding:22px 20px 20px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4)}
+#badgeBox h3{margin:0 0 8px;font-size:24px}
+#badgeBox p{margin:0 0 16px;font-size:17px;color:var(--ink-soft);font-family:var(--ui)}
+#badgeBox .btn{height:48px;font-size:18px}
 #volBox .vrow .btn{height:50px;font-size:19px}
 #intro .note{font-size:14px;opacity:.7;font-family:var(--ui)}
 #campusBar{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--paper);border-radius:22px;padding:10px 22px;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
@@ -457,7 +461,7 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 </div>
 
 <div id="shelfBar" class="hidden">
-  <div class="head"><h2 id="volName">第五册</h2><button class="volBtn" id="volBtn">回校园</button><span id="badgeCount"></span></div>
+  <div class="head"><h2 id="volName">第五册</h2><button class="volBtn" id="volBtn">回校园</button><button class="volBtn" id="badgeBtn">徽章归零</button><span id="badgeCount"></span></div>
   <div id="chips"></div>
 </div>
 
@@ -509,6 +513,10 @@ body.locked .lockable{opacity:.45;pointer-events:none}
     <div id="quizOpts"></div>
     <div id="quizMsg"></div>
   </div>
+</div>
+
+<div class="veil hidden" id="badgeVeil">
+  <div id="badgeBox" role="dialog" aria-label="徽章归零"><h3>徽章归零</h3><p id="badgeMsg"></p><div class="vrow" id="badgeBtns"></div></div>
 </div>
 
 <div class="veil hidden" id="volVeil">
@@ -7585,7 +7593,7 @@ function syncFlipReset() {
   b.textContent = n ? '全部盖回（' + n + '）' : '全部盖回';
 }
 function closeCards() { Voice.cancel(); $('cardVeil').classList.add('hidden'); syncOverlay(); }
-function syncOverlay() { APP.overlay = ['readVeil', 'cardVeil', 'quizVeil', 'endVeil', 'startVeil', 'gameVeil', 'volVeil'].some(id => !$(id).classList.contains('hidden')); }
+function syncOverlay() { APP.overlay = ['readVeil', 'cardVeil', 'quizVeil', 'endVeil', 'startVeil', 'gameVeil', 'volVeil', 'badgeVeil'].some(id => !$(id).classList.contains('hidden')); }
 
 /* =====================================================================
    Games: memory pairs, tone drill, match the halves, sentence order
@@ -8426,6 +8434,33 @@ async function boot() {
   };
   // on the shelf: 换一册
   $('volBtn').onclick = () => backToCampus();
+  // badges back to zero: this volume, or all five
+  const badgeCount = v => Object.keys(store.get(badgeKey(v), {})).length;
+  const closeBadge = () => { $('badgeVeil').classList.add('hidden'); syncOverlay(); };
+  const clearBadges = vols => {
+    vols.forEach(v => store.set(badgeKey(v), {}));
+    badges = store.get(badgeKey(VOL), {});
+    DATA.forEach(d => refreshSpine(d.n)); renderChips();
+    Sound.play('page'); closeBadge();
+    toast(vols.length > 1 ? '五册的徽章都归零了' : '第' + CN_NUM[vols[0]] + '册的徽章归零了');
+  };
+  const badgeMenu = () => {
+    const vn = '第' + CN_NUM[VOL] + '册';
+    $('badgeMsg').textContent = '重新收集徽章。现在' + vn + '有 ' + badgeCount(VOL) + ' 枚。';
+    $('badgeBtns').innerHTML = `<button class="btn" data-a="one">${vn}归零</button><button class="btn" data-a="all">五册全部归零</button><button class="btn" data-a="no">取消</button>`;
+    $('badgeBtns').querySelectorAll('button').forEach(b => b.onclick = () => {
+      const a = b.dataset.a; Sound.play('click');
+      if (a === 'no') return closeBadge();
+      const vols = a === 'all' ? [1, 2, 3, 4, 5] : [VOL];
+      const total = vols.reduce((n, v) => n + badgeCount(v), 0);
+      $('badgeMsg').textContent = (a === 'all' ? '五册' : vn) + '一共 ' + total + ' 枚徽章会被清空，确定吗？';
+      $('badgeBtns').innerHTML = '<button class="btn main" data-a="yes">确定归零</button><button class="btn" data-a="back">再想想</button>';
+      $('badgeBtns').querySelector('[data-a="yes"]').onclick = () => clearBadges(vols);
+      $('badgeBtns').querySelector('[data-a="back"]').onclick = () => { Sound.play('click'); badgeMenu(); };
+    });
+  };
+  $('badgeBtn').onclick = () => { if (APP.state !== ST.BOOKSHELF || APP.busy) return; Sound.play('click'); badgeMenu(); $('badgeVeil').classList.remove('hidden'); syncOverlay(); };
+  $('badgeVeil').addEventListener('click', e => { if (e.target.id === 'badgeVeil') closeBadge(); });
   $('volBtnOld') && ($('volBtnOld').onclick = () => {
     if (APP.state !== ST.BOOKSHELF || APP.busy) return;
     Sound.play('click');
