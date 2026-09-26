@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-28n">
+<meta name="app-version" content="2026-09-28p">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -1466,8 +1466,9 @@ function layoutView(reapply) {
     gsap.to(lookBase, { x: p.look.x, y: p.look.y, z: p.look.z, duration: reapply === 'snap' ? 0 : .5, ease: 'power2.out' });
   }
 }
+const WIDE_OUT = 1.35;   // wide screens (computers, landscape tablets): every view steps back by this much
 function applyPreset(p) {
-  const k = aspectK();
+  const k = aspectK() * (innerWidth / innerHeight > 1.25 ? WIDE_OUT : 1);
   const pos = p.look.clone().add(p.pos.clone().sub(p.look).multiplyScalar(k));
   return { pos, look: p.look.clone() };
 }
@@ -1482,8 +1483,7 @@ const SHELF_CAM = { pos: new THREE.Vector3(0, 4.4, 9.5), look: new THREE.Vector3
 /* act cameras are expressed relative to the spread origin */
 const SPREAD_O = new THREE.Vector3(0, PAGE_Y + BOOK_LIFT, 2.5);
 function actCam(c) {
-  const wide = innerWidth / innerHeight > 1.25;            // on wide screens step further back, so the whole scene fits with room around it
-  const look = new THREE.Vector3(...c.l); const pos = new THREE.Vector3(...c.p).sub(look).multiplyScalar(wide ? 1.38 : 1.12).add(look);
+  const look = new THREE.Vector3(...c.l); const pos = new THREE.Vector3(...c.p).sub(look).multiplyScalar(1.12).add(look);
   return { pos: pos.add(SPREAD_O), look: look.add(SPREAD_O) };
 }
 
