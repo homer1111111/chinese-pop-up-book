@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-28k">
+<meta name="app-version" content="2026-09-28m">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -1775,7 +1775,7 @@ async function enterAct(i, first) {
   // hovering: quick wing beats, a gentle bob and sway; it flies in from above
   const yT = fy.userData.y0; fy.userData.y0 = yT + 6; gsap.to(fy.userData, { y0: yT, duration: 1.4, ease: 'power2.out', delay: .3 });
   A.every(t => {
-    fy.position.y = fy.userData.y0 + Math.sin(t * 2.2) * .18; fy.rotation.z = Math.sin(t * 1.4) * .08;
+    fy.position.y = fy.userData.y0 + Math.sin(t * 2.2) * .12; fy.rotation.z = Math.sin(t * 1.4) * .04;
     fy.userData.wings.forEach((w, k) => w.rotation.z = (k ? -1 : 1) * (.35 + Math.sin(t * 20) * .75));
   });
   camTo(cam.pos, cam.look, first ? 1.3 : 1.5);
@@ -1945,10 +1945,13 @@ function updateBubbles() {
     if (b.dead && !b.shown) { bubbles.splice(i, 1); continue; }
     if (b.dead) { bubbles.splice(i, 1); continue; }
     if (!b.shown) continue;
-    _box.setFromObject(b.obj);
-    _box.getCenter(_v); _v.y = _box.max.y + b.dy;
+    const ay = b.obj.userData.anchorY;
+    if (ay != null) { b.obj.getWorldPosition(_v); _v.y += ay; }   // a fixed point above the owl: its wings and sway do not move the bubble
+    else { _box.setFromObject(b.obj); _box.getCenter(_v); _v.y = _box.max.y + b.dy; }
     _v.project(camera);
-    const x = (_v.x * .5 + .5) * innerWidth, y = (-_v.y * .5 + .5) * innerHeight;
+    let x = (_v.x * .5 + .5) * innerWidth, y = (-_v.y * .5 + .5) * innerHeight;
+    if (b.sx != null && Math.abs(x - b.sx) < 60 && Math.abs(y - b.sy) < 60) { x = b.sx + (x - b.sx) * .18; y = b.sy + (y - b.sy) * .18; }   // smooth out small wobbles (breathing, hovering)
+    b.sx = x; b.sy = y;
     const half = b.el.offsetWidth / 2 + 8, bx = Math.max(half, Math.min(innerWidth - half, x));
     b.el.style.left = bx + 'px';
     b.el.style.setProperty('--tx', Math.max(-(half - 26), Math.min(half - 26, x - bx)) + 'px');
@@ -7933,6 +7936,7 @@ function makeFairy_raw() {
   w1.add(scl(sph(.25, '#7A4A2B', -.24, -.06, 0, 16, 12), 1.1, .45, .8)); w2.add(scl(sph(.25, '#7A4A2B', .24, -.06, 0, 16, 12), 1.1, .45, .8));
   g.add(w1, w2); [-1, 1].forEach(k => g.add(scl(sph(.06, '#F2A33A', k * .1, -.36, .08, 10, 8), 1, .6, 1.3)));
   g.userData.wings = [w1, w2]; g.userData.who = '小猫头鹰'; g.userData.ghEyes = true;
+  g.userData.anchorY = 1.7;
   g.scale.setScalar(1.6);
   return g;
 }   // live item: split by the current mode as it is read
