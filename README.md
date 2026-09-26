@@ -1,6 +1,6 @@
 # Chinese Pop-up Book
 
-A 3D pop-up picture book for the Jinan University *Zhongwen* (《中文》) textbook series, Books 1–5.
+A 3D pop-up audio picture book for the Jinan University *Zhongwen* (《中文》) textbook series, Books 1–5.
 
 **Live site:** https://homer1111111.github.io/chinese-pop-up-book/
 

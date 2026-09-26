@@ -1,10 +1,15 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-26u">
+<meta name="app-version" content="2026-09-26v">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>《中文》第五册 立体绘本</title>
+<title>《中文》第一至五册 立体有声绘本</title>
+<meta name="description" content="暨南《中文》第一至五册的立体有声绘本：3D 故事场景、课文朗读、对话跟读、拼音注音、生字卡和小游戏。">
+<meta property="og:title" content="《中文》第一至五册 立体有声绘本">
+<meta property="og:description" content="暨南《中文》第一至五册的立体有声绘本：3D 故事场景、课文朗读、对话跟读、拼音注音、生字卡和小游戏。">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://homer1111111.github.io/chinese-pop-up-book/">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lxgw-wenkai-webfont@1.7.0/style.css">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
@@ -7039,7 +7044,7 @@ function setVolume(v) {
   DATA.forEach((d, i) => makeBook(d.n, i));
   renderChips();
   const name = '第' + CN_NUM[v] + '册'; drawBoard(v);
-  $('volName').textContent = name; document.title = '《中文》' + name + ' 立体绘本';
+  $('volName').textContent = name; document.title = '《中文》' + name + ' · 立体有声绘本';
   return true;
 }
 function volButtons(box, onPick) {
