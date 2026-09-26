@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-09-28h">
+<meta name="app-version" content="2026-09-28k">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -305,6 +305,12 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 #campusBar{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--paper);border-radius:22px;padding:10px 22px;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
 #fader{position:fixed;inset:0;z-index:60;background:#FFF8EC;opacity:0;pointer-events:none;display:none}
 #fader.on{display:block}
+#leaveBtn{position:fixed;left:14px;top:calc(14px + env(safe-area-inset-top,0px));z-index:21;height:46px;padding:0 18px;border:0;border-radius:23px;background:var(--paper);color:var(--ink);font-size:18px;font-family:inherit;box-shadow:0 4px 14px rgba(0,0,0,.25);cursor:pointer}
+#byeBox{width:min(460px,100%);background:var(--paper);border-radius:24px;padding:26px 22px 22px;text-align:center;box-shadow:0 18px 50px rgba(0,0,0,.4)}
+#byeBox h2{margin:0 0 14px;font-size:28px;line-height:1.35}
+#byeStats{font-size:17px;line-height:1.7;margin:0 0 18px;color:var(--ink-soft);max-height:40vh;overflow:auto}
+#byeStats b{color:var(--ink)}
+#byeHint{margin:12px 0 0;font-size:15px;color:var(--ink-soft);font-family:var(--ui)}
 #toast{position:fixed;top:calc(64px + env(safe-area-inset-top,0px));right:14px;z-index:40;background:rgba(58,46,40,.88);color:#fff;border-radius:14px;padding:6px 14px;font-size:15px;font-family:var(--ui);pointer-events:none}
 #readVeil,#cardVeil,#gameVeil{z-index:46}
 /* ---------- games ---------- */
@@ -466,7 +472,7 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 </div>
 
 <div id="shelfBar" class="hidden">
-  <div class="head"><h2 id="volName">第五册</h2><button class="volBtn" id="volBtn">回校园</button><button class="volBtn" id="badgeBtn">徽章归零</button><span id="badgeCount"></span></div>
+  <div class="head"><h2 id="volName">第五册</h2><button class="volBtn" id="volBtn">回校园</button><button class="volBtn" id="badgeBtn">徽章归零</button><button class="volBtn" id="leaveBtn2">放学回家</button><span id="badgeCount"></span></div>
   <div id="chips"></div>
 </div>
 
@@ -558,6 +564,13 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 
 <div id="toast" class="hidden"></div>
 <div id="campusBar" class="hidden"><span id="campusHint"></span></div>
+<button id="leaveBtn" class="hidden">放学回家</button>
+<div class="veil hidden" id="byeVeil"><div id="byeBox" role="dialog" aria-label="再见">
+  <h2>今天学得真棒！<br>明天见 👋</h2>
+  <div id="byeStats"></div>
+  <div class="vrow"><button class="btn main" id="byeAgain">再走进学校</button><button class="btn" id="byeClose">关闭</button></div>
+  <p id="byeHint" class="hidden">请用手机或浏览器上方的 ✕ 关闭这个页面</p>
+</div></div>
 <div id="fader"></div>
 <div id="intro">
   <div class="vol">暨南《中文》</div>
@@ -1174,7 +1187,7 @@ function buildCampus() {
     const skyTex = TOON ? paintedSky() : canvasTex(8, 512, (c, W, H) => { const g = c.createLinearGradient(0, 0, 0, H); g.addColorStop(0, '#2F7FC4'); g.addColorStop(.32, '#4E9FD8'); g.addColorStop(.46, '#86C3EA'); g.addColorStop(.5, '#BFE2F4'); g.addColorStop(1, '#BFE2F4'); c.fillStyle = g; c.fillRect(0, 0, W, H); });
     const dome = new THREE.Mesh(new THREE.SphereGeometry(170, 32, 16),   // inside the grass (radius 180): no gap at the horizon
       new THREE.MeshBasicMaterial({ map: skyTex, side: THREE.BackSide, fog: false, depthWrite: false, toneMapped: false }));
-    CAMPUS.add(dome);
+    CAMPUS.add(dome); CAMPUS.userData.dome = dome;
     if (!TOON) [[-46, 24, -70], [-14, 30, -90], [26, 26, -80], [56, 22, -60], [-70, 20, -40], [78, 28, -40], [6, 36, -120]].forEach(([x, y, z], i) => { const cl = cloud('#FFFFFF', 5 + (i % 3) * 1.5); cl.position.set(x, y, z); CAMPUS.add(cl); });
     if (TOON) { g.material = new THREE.MeshStandardMaterial({ map: grassTex(), roughness: 1 }); Object.values(BLD).forEach(b => outline(b)); outline(GATE); CAMPUS.children.forEach(o => { if (o.isGroup && o !== KIDC && !BLD[o.userData.vol] && o !== GATE && o !== LASTFLAG) outline(o); }); }
   }
@@ -1196,7 +1209,7 @@ function walkTo(o, x, z, dur) {
   o.position.y = y0; gsap.to(o.position, { y: y0 + .5, duration: .16, yoyo: true, repeat: Math.max(1, Math.round(dur / .16) - 1) * 2 - 1 });
   return tw(o.position, { x, z, duration: dur, ease: 'none' });
 }
-function campusHint(t) { $('campusHint').textContent = t; $('campusBar').classList.toggle('hidden', !t); }
+function campusHint(t) { $('campusHint').textContent = t; $('campusBar').classList.toggle('hidden', !t); $('leaveBtn').classList.toggle('hidden', !(APP.state === ST.CAMPUS && APP.campusStage === 'yard' && t)); }
 const GATE_CAM = () => ({ pos: cw(0, 9, 62), look: cw(0, 6, 26) });
 function OVER_CAM() {   // far enough back that the whole arc of buildings fits the screen, portrait or landscape
   const look = cw(0, 5, -8), dir = new THREE.Vector3(0, 30, 56).normalize();
@@ -1255,6 +1268,32 @@ async function enterBuilding(v) {
   camTo(SHELF_CAM.pos, SHELF_CAM.look, 0);
   await goShelf(false); await fade(false);
   unlock();
+}
+/* leaving school: out of the classroom, across the yard at sunset, through the gate, a wave, then goodbye */
+async function goHome() {
+  if (APP.busy) return;
+  if (APP.state === ST.BOOKSHELF) { lock(); Sound.play('click'); await fade(true); await goCampus(false); await fade(false); unlock(); }
+  if (APP.state !== ST.CAMPUS || APP.campusStage !== 'yard') return;
+  lock(); campusHint(''); $('leaveBtn').classList.add('hidden'); Sound.play('chime');
+  setLight({ sky: '#FFC49A', gnd: '#6F5A8A', hemi: .85, sun: .95, sunColor: '#FF9A5A', lamp: 0, bg: '#F2A07A' }, 3);
+  const dome = CAMPUS.userData.dome; if (dome) { const c = new THREE.Color('#FFB58E'); gsap.to(dome.material.color, { r: c.r, g: c.g, b: c.b, duration: 3 }); }
+  for (let v = 1; v <= 5; v++) gsap.to(BLD[v].userData.wall.emissive, { r: .22, g: .14, b: .04, duration: 3 });   // lights on in the classrooms
+  camTo(cw(0, 12, 70), cw(0, 5, 26), 4.5, 'sine.inOut');
+  KIDC.scale.setScalar(4); KIDC.visible = true;
+  await walkTo(KIDC, 0, 16, 1.6); await walkTo(KIDC, 0, 42, 2.6);
+  KIDC.rotation.y = Math.PI; await wait(300); wave(KIDC, 3); Sound.play('sparkle'); await wait(1800);
+  await fade(true); showBye(); await fade(false);
+  unlock();
+}
+function showBye() {
+  const t = todayLog();
+  const name = ([v, n]) => { const d = VOLS[v] && VOLS[v].data.find(x => x.n === n); return '第' + CN_NUM[v] + '册 第' + CN_NUM[n] + '课 ' + (d ? d.t : ''); };
+  const seals = t.badges.map(([v, n]) => { const L = VOLS[v] && VOLS[v].lessons[n]; return L && L.badge ? L.badge.seal : '★'; }).join(' ');
+  $('byeStats').innerHTML = t.lessons.length
+    ? '今天读了 <b>' + t.lessons.length + '</b> 课：<br>' + t.lessons.map(name).join('<br>') + '<br><br>拿到 <b>' + t.badges.length + '</b> 枚徽章' + (seals ? '：' + seals : '')
+    : '今天还没有读课文，明天一起来读吧！';
+  $('byeHint').classList.add('hidden');
+  $('byeVeil').classList.remove('hidden'); syncOverlay();
 }
 async function backToCampus() {
   if (APP.state !== ST.BOOKSHELF || APP.busy) return;
@@ -1510,7 +1549,7 @@ function drawMusicBtn() {
    ===================================================================== */
 const SERIES_TITLE = '《中文》第一至五册 立体有声绘本';
 async function goShelf(first) {
-  setState(ST.BOOKSHELF); $('campusBar').classList.add('hidden');
+  setState(ST.BOOKSHELF); $('campusBar').classList.add('hidden'); $('leaveBtn').classList.add('hidden');
   document.title = '《中文》第' + CN_NUM[VOL] + '册 · 立体有声绘本';
   CAMPUS.visible = false; room.visible = true; books.forEach(b => b.visible = true);
   if (PUPIL) { PUPIL.visible = true; if (Math.abs(PUPIL.position.x - 7.4) > .2) { walkTo(PUPIL, 7.4, -7.4, 1).then(() => { PUPIL.rotation.y = -.5; }); } }
@@ -1538,7 +1577,7 @@ async function openBook(n) {
   lock(); setState(ST.BOOK_ZOOM);
   $('tip').classList.add('hidden');
   Sound.play('whoosh');
-  APP.n = n; APP.book = b; APP.actIdx = 0; APP.seen = new Set();
+  APP.n = n; APP.book = b; APP.actIdx = 0; APP.seen = new Set(); logToday('lessons', VOL, n);
   const L = LESSONS[n];
   Sound.setMood(L.mood || 0);
   showUI('none');
@@ -2195,14 +2234,10 @@ function personAnime(o = {}) {
   [-1, 1].forEach(k => { const b = P('gh_brow', () => new THREE.TorusGeometry(.04, .007, 5, 10, Math.PI * .8), hair, k * .105, .07, .285); b.rotation.z = Math.PI * .1; b.scale.set(1, .5, .5); h.add(b); });   // thin arched brows
   h.add(P('gh_nose', () => new THREE.SphereGeometry(.016, 8, 6), '#EDB598', 0, -.07, .3));
   const mo = P('gh_mouth', () => new THREE.TorusGeometry(.028, .008, 8, 12, Math.PI), '#A5483F', 0, -.13, .275); mo.rotation.z = Math.PI; h.add(mo);
-  [-1, 1].forEach(k => { const c = P('gh_blush', () => new THREE.SphereGeometry(.045, 12, 8), '#F4B7A5', k * .17, -.09, .245); c.scale.set(1, .45, .3); h.add(c); });
   // hair: a full cap plus pointed bangs, then the style
   const st = o.hairStyle || 'short';
   if (st !== 'bald' && st !== 'none') {
     const cap = P('an_cap', () => new THREE.SphereGeometry(.33, 24, 18, 0, Math.PI * 2, 0, 1.75), hair, 0, .03, -.02, 1.03); cap.rotation.x = -.35; h.add(cap);
-    [[-.15, .15, -.3], [0, .17, 0], [.15, .15, .3]].forEach(([x, y, rz]) => {    // bangs: three soft clumps
-      const b = P('gh_bang', () => new THREE.SphereGeometry(.13, 14, 10), hair, x, y, .2); b.scale.set(1, .62, .55); b.rotation.z = rz; h.add(b);
-    });
     [-1, 1].forEach(k => { const sl = P('gh_side', () => new THREE.SphereGeometry(.09, 12, 10), hair, k * .27, -.05, .06); sl.scale.set(.6, 1.35, .7); h.add(sl); });
   }
   const lock = (x, y, z, rx, len) => { const l = P('an_lock' + len, () => new THREE.ConeGeometry(.11, len, 10), hair, x, y, z, 1.04); l.rotation.set(rx, 0, 0); return l; };
@@ -7557,6 +7592,10 @@ const VOLS = {
 const VOL_LIST = [1, 2, 3, 4, 5];            // shown in the pickers; the ones without data say 制作中
 let VOL = 5;
 const badgeKey = v => v === 5 ? 'zw5.badges' : 'zw.v' + v + '.badges';
+/* what was read and earned today, for the goodbye screen */
+const todayKey = () => { const d = new Date(); return d.getFullYear() + '-' + (d.getMonth() + 1) + '-' + d.getDate(); };
+function todayLog() { const t = store.get('zw.today', null); return t && t.date === todayKey() ? t : { date: todayKey(), lessons: [], badges: [] }; }
+function logToday(kind, v, n) { const t = todayLog(); if (!t[kind].some(([a, b]) => a === v && b === n)) t[kind].push([v, n]); store.set('zw.today', t); }
 function setVolume(v) {
   const V = VOLS[v]; if (!V) return false;
   VOL = v; store.set('zw.vol', v);
@@ -8123,7 +8162,7 @@ function syncFlipReset() {
   b.textContent = n ? '全部盖回（' + n + '）' : '全部盖回';
 }
 function closeCards() { Voice.cancel(); $('cardVeil').classList.add('hidden'); syncOverlay(); }
-function syncOverlay() { APP.overlay = ['readVeil', 'cardVeil', 'quizVeil', 'endVeil', 'startVeil', 'gameVeil', 'volVeil', 'badgeVeil'].some(id => !$(id).classList.contains('hidden')); }
+function syncOverlay() { APP.overlay = ['readVeil', 'cardVeil', 'quizVeil', 'endVeil', 'startVeil', 'gameVeil', 'volVeil', 'badgeVeil', 'byeVeil'].some(id => !$(id).classList.contains('hidden')); }
 
 /* =====================================================================
    Games: memory pairs, tone drill, match the halves, sentence order
@@ -8797,7 +8836,7 @@ function finishQuiz() {
   $('quizVeil').classList.add('hidden');
   const n = APP.n, L = LESSONS[n];
   const isNew = !badges[n];
-  badges[n] = true; store.set(badgeKey(VOL), badges); refreshSpine(n); renderChips();
+  badges[n] = true; store.set(badgeKey(VOL), badges); refreshSpine(n); renderChips(); logToday('badges', VOL, n);
   setState(ST.ENDING);
   $('endSeal').textContent = L.badge.seal;
   $('endName').textContent = '“' + L.badge.name + '”徽章';
@@ -8964,6 +9003,15 @@ async function boot() {
   };
   // on the shelf: 换一册
   $('volBtn').onclick = () => backToCampus();
+  $('leaveBtn').onclick = () => { Sound.init(); goHome(); };
+  $('leaveBtn2').onclick = () => { if (APP.state === ST.BOOKSHELF && !APP.busy) goHome(); };
+  $('byeAgain').onclick = async () => {        // back to the start: the gate in daylight
+    $('byeVeil').classList.add('hidden'); syncOverlay();
+    const dome = CAMPUS.userData.dome; if (dome) dome.material.color.set('#ffffff');
+    for (let v = 1; v <= 5; v++) BLD[v].userData.wall.emissive.setRGB(0, 0, 0);
+    await fade(true); await goCampus(true); await fade(false);
+  };
+  $('byeClose').onclick = () => { try { window.close(); } catch (e) { } setTimeout(() => $('byeHint').classList.remove('hidden'), 400); };
   // badges back to zero: this volume, or all five
   const badgeCount = v => Object.keys(store.get(badgeKey(v), {})).length;
   const closeBadge = () => { $('badgeVeil').classList.add('hidden'); syncOverlay(); };
