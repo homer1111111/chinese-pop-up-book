@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-10-05c">
+<meta name="app-version" content="2026-10-05d">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -1016,7 +1016,7 @@ const Sound = (() => {
    Speech (ported from the app: epoch guard + retry, zh-CN first)
    ===================================================================== */
 const Voice = (() => {
-  let voices = [], epoch = 0, rate = store.get('zw5.rate', .8);
+  let voices = [], epoch = 0, rate = store.get('zw.rate2', .5);
   function load() { if (!window.speechSynthesis) return; const v = speechSynthesis.getVoices(); if (v && v.length) voices = v; }
   if (window.speechSynthesis) { load(); speechSynthesis.onvoiceschanged = load; setTimeout(load, 300); setTimeout(load, 1200); }
   function zh() { if (!voices.length) load(); return voices.filter(v => v.lang && v.lang.replace('_', '-').toLowerCase().startsWith('zh')); }
@@ -1132,7 +1132,7 @@ const Voice = (() => {
   }
   return {
     speak, cancel, say, play, idle, restart,
-    get rate() { return rate; }, set rate(v) { rate = v; store.set('zw5.rate', v); },
+    get rate() { return rate; }, set rate(v) { rate = v; store.set('zw.rate2', v); },
     get supported() { return !!window.speechSynthesis; },
     get hasZh() { return zh().length > 0; }
   };
