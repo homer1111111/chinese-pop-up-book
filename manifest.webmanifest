@@ -1,0 +1,16 @@
+{
+  "name": "《中文》立体有声绘本 · Chinese 3D Pop-up Picture Book",
+  "short_name": "立体绘本",
+  "description": "A 3D pop-up audio picture book for Jinan University's Zhongwen (Chinese), Books 1-5.",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#FBF3E2",
+  "theme_color": "#C8453B",
+  "lang": "zh-CN",
+  "icons": [
+    { "src": "icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

@@ -1,7 +1,14 @@
 <!DOCTYPE html>
 <html lang="zh-Hans">
 <head>
-<meta name="app-version" content="2026-10-05d">
+<link rel="icon" type="image/png" sizes="192x192" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="theme-color" content="#C8453B">
+<meta property="og:image" content="https://homer1111111.github.io/chinese-pop-up-book/og-image.jpg">
+<meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="app-version" content="2026-10-06d">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -58,17 +65,17 @@ input[type=checkbox]{accent-color:var(--seal);width:18px;height:18px}   /* check
 #enBtn[aria-pressed=false]{opacity:.55}
 #helpBtn{width:42px;padding:0;justify-content:center;font-family:var(--ui);font-size:18px;font-weight:700}
 /* English under/after the Chinese labels (interface only, never the lesson text) */
-.en{display:none;font-family:var(--ui);font-size:.6em;font-weight:500;letter-spacing:0;opacity:.75;margin-left:.45em;white-space:nowrap}
+.en{display:none;font-family:var(--ui);font-size:max(.6em,11px);font-weight:500;letter-spacing:0;opacity:.9;margin-left:.45em;white-space:nowrap}
 body.en-on .en{display:inline}
 .en:not([lang]){display:block!important;margin:4px 4px 0!important;white-space:normal!important;opacity:.85;font-size:14px!important;line-height:1.25;color:#6B5A4A;text-align:center;overflow-wrap:anywhere}
 body.en-on .docTabs button{height:auto;min-height:40px;padding-top:4px;padding-bottom:4px;line-height:1.15}
-body.en-on .docTabs button .en{display:block;margin:0;font-size:10px}
+body.en-on .docTabs button .en{display:block;margin:0;font-size:11px}
 body.en-on #startBox .btn .en,body.en-on .gpick .en,body.en-on #intro .en,body.en-on #byeBox h2 .en,body.en-on .sheet h3 .en{display:block;margin:2px 0 0}
 body.en-on #startBox .btn{display:grid;grid-template-columns:auto 1fr;column-gap:10px;row-gap:0;align-items:center;text-align:left}
 body.en-on #startBox .btn .ic{grid-row:1 / span 2}
 body.en-on #startBox .btn .en{grid-column:2;margin:0;font-size:.62em}
 body.en-on #startBox #goStory,body.en-on #startBox #goShelf{grid-template-columns:auto auto;justify-content:center}
-body.en-on .sideBtns .icon-btn .en{display:block;margin:1px 0 0;font-size:9px;line-height:1.1;white-space:normal;text-align:center}
+body.en-on .sideBtns .icon-btn .en{display:block;margin:1px 0 0;font-size:10.5px;line-height:1.1;white-space:normal;text-align:center}
 body.en-on .sideBtns .icon-btn{height:auto;min-height:52px;padding-top:4px;padding-bottom:4px}
 body.en-on #campusHint{white-space:nowrap;display:inline-block;max-width:calc(100vw - 40px);text-align:center}
 body.en-on #campusHint .en{white-space:normal}
@@ -82,7 +89,7 @@ body.en-on .tapHint .en{display:block;grid-column:2;margin:0;font-size:11px;over
 #quizQEn{display:none;font-family:var(--ui);font-size:14px;font-style:italic;color:#6B5A4A;margin:-6px 0 10px;text-align:center}
 body.en-on #quizQEn:not(:empty){display:block}
 body.en-on #shelfBar .volBtn{display:inline-flex;flex-direction:column;align-items:center;line-height:1.15;height:auto;padding:3px 10px}
-body.en-on #shelfBar .volBtn .en{display:block;margin:0;font-size:9px}
+body.en-on #shelfBar .volBtn .en{display:block;margin:0;font-size:10.5px}
 #tools{display:flex;gap:8px}
 body.locked .lockable{opacity:.45;pointer-events:none}
 
@@ -350,6 +357,17 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 #campusBar{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--paper);border-radius:22px;padding:10px 22px;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
 #fader{position:fixed;inset:0;z-index:60;background:#FFF8EC;opacity:0;pointer-events:none;display:none}
 #fader.on{display:block}
+/* readable book labels floating over the five buildings (yard only); tapping one opens that book */
+#bldLabels{position:fixed;inset:0;z-index:12;pointer-events:none}
+#bldLabels .bl{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:0;border-radius:12px;padding:3px 7px 3px;color:#fff;font-size:clamp(13px,3.6vw,18px);line-height:1.1;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.18);cursor:pointer;white-space:nowrap}
+#bldLabels .bl small{display:block;font-family:var(--ui);font-size:clamp(10px,2.8vw,12px);font-weight:700;opacity:.95}
+#bldLabels .bl::after{content:'';position:absolute;left:50%;bottom:-6px;transform:translateX(-50%);border:6px solid transparent;border-top-color:inherit;border-bottom:0}
+#bldLabels .bl:first-child{z-index:2}
+#bldLabels .start{position:absolute;left:-4px;top:calc(100% + 9px);background:#FBF3E2;color:#C8453B;border:2px solid #C8453B;border-radius:12px;padding:2px 8px;font-size:13px;font-weight:700;white-space:nowrap;animation:breathe 1.6s ease-in-out infinite}
+#bldLabels .start .en{font-size:11px}
+#voiceTip{position:fixed;left:50%;bottom:calc(16px + var(--sab));transform:translateX(-50%);z-index:70;width:min(92vw,440px);background:var(--grain),linear-gradient(#FFF6E6,#F6E3C2);border:1px solid rgba(200,69,59,.35);border-radius:18px;padding:14px 16px;box-shadow:0 14px 34px rgba(20,10,4,.3);font-size:16px;line-height:1.45}
+#voiceTip p{margin:6px 0 0;font-size:15px}#voiceTip p.e{font-family:var(--ui);font-size:13px;color:#6B5A4A}#voiceTip .btn{margin-top:10px;height:40px}
+#voiceTip .en{display:block;margin:2px 0 0}
 /* guided path: five steps, the next one is one big button */
 #path{background:rgba(255,255,255,.55);border:1px solid rgba(160,120,70,.2);border-radius:18px;padding:10px 12px 12px;margin:0 0 14px;text-align:left}
 #path .pt{display:flex;align-items:baseline;gap:8px;font-size:16px;margin-bottom:8px}
@@ -629,6 +647,7 @@ body.en-on #pracBody .len{display:block}
 </head>
 <body>
 <div id="gloss" class="hidden" role="dialog" aria-label="word card"><div class="gw"></div><div class="gp"></div><div class="ge" lang="en"></div><button class="gs" type="button" aria-label="play"><i class="ic" data-ic="speaker"></i></button></div>
+<div id="bldLabels" class="hidden"></div>
 <div id="cur"></div><div id="curRing"></div><div id="vignette"></div>
 <div id="loader"><div class="lbook"><i></i><i></i></div><p>正在打开书包…</p></div>
 <!-- libraries load after the loading screen is on screen -->
@@ -1016,7 +1035,7 @@ const Sound = (() => {
    Speech (ported from the app: epoch guard + retry, zh-CN first)
    ===================================================================== */
 const Voice = (() => {
-  let voices = [], epoch = 0, rate = store.get('zw.rate2', .5);
+  let voices = [], epoch = 0, rate = store.get('zw.rate3', .55);
   function load() { if (!window.speechSynthesis) return; const v = speechSynthesis.getVoices(); if (v && v.length) voices = v; }
   if (window.speechSynthesis) { load(); speechSynthesis.onvoiceschanged = load; setTimeout(load, 300); setTimeout(load, 1200); }
   function zh() { if (!voices.length) load(); return voices.filter(v => v.lang && v.lang.replace('_', '-').toLowerCase().startsWith('zh')); }
@@ -1132,7 +1151,7 @@ const Voice = (() => {
   }
   return {
     speak, cancel, say, play, idle, restart,
-    get rate() { return rate; }, set rate(v) { rate = v; store.set('zw.rate2', v); },
+    get rate() { return rate; }, set rate(v) { rate = v; store.set('zw.rate3', v); },
     get supported() { return !!window.speechSynthesis; },
     get hasZh() { return zh().length > 0; }
   };
@@ -1235,9 +1254,7 @@ function animeize(root) {   // every part of a person: flat anime colour; head, 
 }
 const _msm = {};
 function MS(color) { return _msm[color] || (_msm[color] = new THREE.MeshStandardMaterial({ color: col(color), roughness: .62, metalness: 0 })); }   // smooth clay, for people (not cel-shaded)
-function unToon(root) {   // hats, beards, glasses… built from the shared helpers become smooth clay too
-  root.traverse(o => { if (o.isMesh && o.material && o.material.isMeshToonMaterial) { const m = o.material; o.material = m.transparent || m.emissiveIntensity ? new THREE.MeshStandardMaterial({ color: m.color, transparent: m.transparent, opacity: m.opacity, side: m.side, emissive: m.emissive, emissiveIntensity: m.emissiveIntensity, roughness: .62 }) : MS('#' + m.color.clone().convertLinearToSRGB().getHexString()); } });
-}
+
 const PEOPLE = [];                                                                 // every person, for blinking / breathing / walking
 function mk(geo, mat, x = 0, y = 0, z = 0) {
   const m = new THREE.Mesh(geo, typeof mat === 'string' ? M(mat) : mat);
@@ -1391,7 +1408,6 @@ function drawBoard(v) {
 })();
 /* merge the still parts of an object into one mesh per material (one draw call each) */
 function mergeStatic(root, skip) {
-  if (/[?&]nomerge\b/.test(location.search)) return;   // diagnostics: keep every part separate
   root.updateMatrixWorld(true);
   const inv = new THREE.Matrix4().copy(root.matrixWorld).invert(), buckets = new Map(), gone = [];
   const walk = (o, inGone) => {
@@ -1480,7 +1496,15 @@ function buildCampus() {
     b.add(box(1, 2.4, 1, '#B9876A', 2.8, 14.6, -1.5));
     [[-4.1, 2, 3.6], [-4.3, 3.5, 3.6], [-3.9, 4.8, 3.6], [-4.2, 1, 3.6]].forEach(([x, y, z]) => b.add(scl(sph(.9, '#5E8C4A', x, y, z, 12, 10), 1, 1, .3)));
     const door = new THREE.Group(); door.position.set(-1.2, 0, 3.6); door.add(box(2.4, 3.6, .2, '#8A5A3B', 1.2, 1.8, 0)); b.add(door);
-    b.add(rot(at(sign('第' + CN_NUM[v] + '册', 8.4, 2.8, { bg: c }), 0, 15.4, 1), -.5, 0, 0));   // big name board on the roof, tilted toward the camera
+    // big name board on the roof, tilted toward the camera: Chinese name and "BOOK n"
+    const boardTex = canvasTex(1024, 342, (cx, W, H) => {
+      cx.fillStyle = c; cx.fillRect(0, 0, W, H); cx.strokeStyle = 'rgba(255,255,255,.85)'; cx.lineWidth = 14; cx.strokeRect(14, 14, W - 28, H - 28);
+      cx.fillStyle = '#FFFFFF'; cx.textAlign = 'center'; cx.textBaseline = 'middle';
+      cx.font = `700 168px ${KAI}`; cx.fillText('第' + CN_NUM[v] + '册', W / 2, H * .41);
+      cx.font = '800 76px "Helvetica Neue", Arial, sans-serif'; cx.fillText('BOOK ' + v, W / 2, H * .8);
+    });
+    b.add(rot(at(mk(new THREE.PlaneGeometry(8.4, 2.8), new THREE.MeshBasicMaterial({ map: boardTex, toneMapped: false })), 0, 15.4, 1.05), -.5, 0, 0));
+
     b.position.set(bldX(v), 0, bldZ(v)); b.rotation.y = -bldA(v); b.userData.vol = v; b.userData.door = door; b.userData.wall = wallMat;
     CAMPUS.add(b); BLD[v] = b;
   }
@@ -2487,8 +2511,19 @@ function watchFps(now) {   // if the picture keeps stuttering, step down one tie
   const fps = FPS.n * 1000 / (now - FPS.t0); FPS.t0 = now; FPS.n = 0;
   if (fps < 38) { if (++FPS.slow >= 2 && QUALITY.tier !== 'low') { applyQuality(QUALITY.tier === 'high' ? 'mid' : 'low'); FPS.slow = 0; FPS.start = now; } } else FPS.slow = 0;
 }
+function placeBldLabels() {
+  const box = $('bldLabels'), show = APP.state === ST.CAMPUS && APP.campusStage === 'yard' && !APP.overlay && BLD[1] && BLD[1].visible && BLD[1].scale.y > .9;
+  box.classList.toggle('hidden', !show); if (!show) return;
+  if (!box.firstChild) for (let v = 1; v <= 5; v++) {
+    const b = document.createElement('button'); b.className = 'bl'; b.style.background = VOL_COLOR[v]; b.style.borderTopColor = VOL_COLOR[v];
+    b.innerHTML = '第' + CN_NUM[v] + '册<small>Book ' + v + '</small>' + (v === 1 ? '<span class="start">从这里开始<span class="en" lang="en"> · Start here</span></span>' : '');
+    b.onclick = () => { if (!APP.busy && APP.state === ST.CAMPUS && APP.campusStage === 'yard') { Sound.init(); enterBuilding(v); } }; box.appendChild(b);
+  }
+  [...box.children].forEach((el, k) => { const v = k + 1, p = new THREE.Vector3(); BLD[v].getWorldPosition(p); p.y += 15.2; p.project(camera);
+    el.style.left = ((p.x * .5 + .5) * innerWidth) + 'px'; el.style.top = ((-p.y * .5 + .5) * innerHeight) + 'px'; });
+}
 function frame() {
-  requestAnimationFrame(frame); watchFps(performance.now());
+  requestAnimationFrame(frame); watchFps(performance.now()); placeBldLabels();
   if (PUPIL) PUPIL.visible = !OB.visible;   // never in the picture of an open book
   if (window.__g3on) return;          // a 3D mini-game is drawing; the book scene waits
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
@@ -2527,7 +2562,7 @@ if (window.ResizeObserver) new ResizeObserver(() => layoutView()).observe($('sto
    Low-poly clay builders. People face +z, animals face +x.
    ===================================================================== */
 const SKIN = '#F6D3B7';
-function person(o = {}) { return TOON ? personAnime(o) : HQ ? personHQ(o) : personFlat(o); }
+function person(o = {}) { return personAnime(o); }
 function lighten(hex, k = .35) { const c = new THREE.Color(hex); c.lerp(new THREE.Color('#ffffff'), k); return '#' + c.getHexString(); }
 /* anime figure: slim body, long legs, neck, smaller oval head with big eyes, spiky bangs; flat colour with a soft shadow tone */
 function personAnime(o = {}) {
@@ -2618,80 +2653,7 @@ function personAnime(o = {}) {
   PEOPLE.push(r);
   return r;
 }
-function personHQ(o = {}) {
-  const skin = o.skin || SKIN, hair = o.hair || '#3B2A20', shirt = o.shirt || '#5B8DB8', pants = o.pants || '#3F4A5C';
-  const sm = (geoKey, make, c, x, y, z) => mk(G(geoKey, make), MS(c), x, y, z);
-  const r = new THREE.Group(), body = new THREE.Group(); r.add(body); r.userData.body = body;
-  if (o.robe) {
-    const robe = sm('pr_robe', () => new THREE.CylinderGeometry(.3, .56, 1.2, 22), shirt, 0, .6, 0); robe.userData.line = 1.025; body.add(robe);
-    body.add(sm('pr_belt', () => new THREE.CylinderGeometry(.318, .335, .09, 22), o.belt || '#8A5A3B', 0, .82, 0));
-    const col = sm('pr_collar', () => new THREE.TorusGeometry(.2, .055, 8, 22), o.collar || '#F3E6CB', 0, 1.2, 0); col.rotation.x = Math.PI / 2; body.add(col);
-  } else {
-    [-1, 1].forEach(k => {
-      body.add(sm('pr_leg', () => new THREE.CylinderGeometry(.11, .12, .5, 14), pants, k * .14, .27, 0));
-      const shoe = sm('pr_shoe', () => new THREE.SphereGeometry(.13, 16, 10), o.shoes || '#4A3528', k * .14, .05, .06); shoe.scale.set(1, .62, 1.45); body.add(shoe);
-    });
-    if (o.skirt) { const sk = sm('pr_skirt', () => new THREE.ConeGeometry(.52, .55, 22), o.skirt, 0, .6, 0); sk.userData.line = 1.03; body.add(sk); }
-    const torso = sm('pr_torso', () => new THREE.CylinderGeometry(.27, .38, .72, 22), shirt, 0, .86, 0); torso.userData.line = 1.03; body.add(torso);
-    const col = sm('pr_collar2', () => new THREE.TorusGeometry(.2, .05, 8, 22), lighten(shirt, .55), 0, 1.2, 0); col.rotation.x = Math.PI / 2; body.add(col);
-    [0, 1].forEach(i => body.add(sm('pr_btn', () => new THREE.SphereGeometry(.028, 8, 6), lighten(shirt, .7), 0, 1.02 - i * .17, .3 + i * .02)));
-  }
-  ['L', 'R'].forEach((side, k) => {
-    const sgn = k ? 1 : -1, sleeve = o.sleeve || shirt;
-    const a = new THREE.Group(); a.position.set(sgn * .34, 1.13, 0);
-    a.add(sm('pr_sleeve', () => new THREE.CylinderGeometry(.085, .095, .44, 12), sleeve, 0, -.22, 0));
-    const cuff = sm('pr_cuff', () => new THREE.TorusGeometry(.085, .025, 6, 14), lighten(sleeve, .5), 0, -.43, 0); cuff.rotation.x = Math.PI / 2; a.add(cuff);
-    a.add(sm('pr_hand', () => new THREE.SphereGeometry(.1, 14, 10), skin, 0, -.52, 0));
-    a.rotation.z = sgn * .2; a.userData.base = a.children.length; r.add(a); r.userData['arm' + side] = a;
-  });
-  const h = new THREE.Group(); h.position.y = 1.62; r.add(h); r.userData.head = h; h.userData.y0 = 1.62;
-  if (o.s && o.s < .9) h.scale.setScalar(1.1);                         // children: a slightly bigger head
-  const head = sm('pr_head', () => new THREE.SphereGeometry(.47, 26, 20), skin, 0, 0, 0); head.userData.line = 1.025; h.add(head);
-  [-1, 1].forEach(k => { const e = sm('pr_ear', () => new THREE.SphereGeometry(.09, 10, 8), skin, k * .46, -.02, 0); e.scale.set(.6, 1, .8); h.add(e); });
-  const eyes = [-1, 1].map(k => {
-    const g = new THREE.Group(); g.position.set(k * .17, 0, .395);
-    const white = sm('pr_eyew2', () => new THREE.SphereGeometry(.1, 16, 12), '#FFFFFF', 0, 0, 0); white.scale.set(.95, 1.3, .42); g.add(white);
-    const iris = sm('pr_iris', () => new THREE.SphereGeometry(.08, 16, 12), o.eye || '#5A3522', 0, -.012, .028); iris.scale.set(.9, 1.2, .45); g.add(iris);
-    const pupil = sm('pr_pup2', () => new THREE.SphereGeometry(.045, 12, 10), '#1E1410', 0, -.018, .052); pupil.scale.set(.9, 1.15, .4); g.add(pupil);
-    g.add(mk(G('pr_hi1', () => new THREE.SphereGeometry(.026, 10, 8)), M('#FFFFFF', { emissive: '#FFFFFF', emissiveIntensity: .9 }), -k * .025, .035, .075));
-    g.add(mk(G('pr_hi2', () => new THREE.SphereGeometry(.013, 8, 6)), M('#FFFFFF', { emissive: '#FFFFFF', emissiveIntensity: .9 }), k * .02, -.045, .072));
-    const lash = sm('pr_lash', () => new THREE.TorusGeometry(.098, .014, 6, 16, Math.PI), '#2B1E18', 0, .005, .03); lash.scale.set(1, 1.3, .6); g.add(lash);
-    h.add(g); return g;
-  });
-  r.userData.eyes = eyes;
-  [-1, 1].forEach(k => { const b = sm('pr_brow2', () => new THREE.BoxGeometry(.1, .018, .02), hair, k * .165, .2, .425); b.rotation.z = -k * .06; h.add(b); });   // soft, friendly brows
-  h.add(sm('pr_nose', () => new THREE.SphereGeometry(.022, 8, 6), '#E9B79A', 0, -.1, .465));
-  [-1, 1].forEach(k => { const c = sm('pr_blush', () => new THREE.SphereGeometry(.075, 12, 8), '#F6B4AA', k * .29, -.13, .35); c.scale.set(1, .55, .4); h.add(c); });
-  const mouth = sm('pr_mouth2', () => new THREE.TorusGeometry(.055, .014, 8, 16, Math.PI), '#A8443F', 0, -.19, .435); mouth.rotation.z = Math.PI; h.add(mouth);
-  const st = o.hairStyle || 'short';
-  if (st !== 'bald' && st !== 'none') {
-    const cap = mk(G('pr_haircap', () => new THREE.SphereGeometry(.5, 26, 18, 0, Math.PI * 2, 0, 1.3)), MS(hair), 0, .03, -.03);
-    cap.rotation.x = -.5; h.add(cap);
-  }
-  const hs = (r0, x, y, z) => sm('pr_hs' + r0, () => new THREE.SphereGeometry(r0, 14, 10), hair, x, y, z);
-  if (st === 'bun') h.add(hs(.2, 0, .38, -.3));
-  if (st === 'long') { const L = sm('pr_long', () => new THREE.CylinderGeometry(.44, .48, .8, 20, 1, true, Math.PI * .6, Math.PI * .8), hair, 0, -.3, 0); L.material = M(hair, { flatShading: false, roughness: .62, side: THREE.DoubleSide }); h.add(L); }
-  if (st === 'twin') { h.add(hs(.17, -.46, .05, -.12)); h.add(hs(.17, .46, .05, -.12)); h.add(sm('pr_bow', () => new THREE.SphereGeometry(.05, 8, 6), '#E24A6A', -.4, .18, -.02)); }
-  if (st === 'pony') { h.add(hs(.17, 0, .2, -.5)); h.add(rot(sm('pr_pony', () => new THREE.ConeGeometry(.14, .5, 12), hair, 0, -.1, -.58), .4, 0, 0)); }
-  if (st === 'topknot') { h.add(hs(.15, 0, .52, -.05)); h.add(sm('pr_band', () => new THREE.CylinderGeometry(.07, .07, .06, 12), o.band || '#C8453B', 0, .43, -.03)); }
-  if (st === 'bald') { [-1, 1].forEach(k => { const b = hs(.16, k * .42, 0, -.08); b.scale.set(1, 1.3, 1.3); h.add(b); }); const b = hs(.3, 0, -.02, -.36); b.scale.set(1.3, 1, .6); h.add(b); }
-  if (o.beard) { const b = cone(.2, .5, o.beard, 0, -.5, .28, 7); b.rotation.x = Math.PI - .25; h.add(b); }
-  if (o.mustache) { h.add(box(.28, .05, .05, o.mustache, 0, -.07, .46)); }
-  if (o.glasses) { [-1, 1].forEach(k => h.add(tor(.11, .022, '#5A4030', k * .16, .03, .47))); h.add(box(.1, .02, .02, '#5A4030', 0, .05, .48)); }
-  if (o.hat === 'official') { h.add(box(.62, .2, .56, '#2D2D2D', 0, .5, -.02)); h.add(box(1.2, .05, .08, '#2D2D2D', 0, .5, -.2)); }
-  if (o.hat === 'straw') { h.add(cyl(.82, .82, .04, '#D9B56B', 0, .35, 0, 14)); h.add(cyl(.28, .38, .3, '#D9B56B', 0, .5, 0, 10)); }
-  if (o.hat === 'cap') { h.add(scl(sph(.5, o.capColor || '#C8453B', 0, .1, 0, 12, 8), 1, .7, 1)); h.add(box(.5, .04, .35, o.capColor || '#C8453B', 0, .12, .45)); }
-  if (o.hat === 'helmet') {
-    h.add(mk(G('helm', () => new THREE.SphereGeometry(.64, 16, 12)), new THREE.MeshStandardMaterial({ color: col('#DFF1FF'), transparent: true, opacity: .32, roughness: .1 })));
-    h.add(tor(.5, .08, '#F2F2F2', 0, -.45, 0)); h.children[h.children.length - 1].rotation.x = Math.PI / 2;
-  }
-  if (o.pack) r.add(box(.5, .6, .3, o.pack, 0, .95, -.35));
-  if (o.s) r.scale.setScalar(o.s);
-  r.userData.kind = 'person'; r.userData.ph = Math.random() * 6; r.userData.nextBlink = 1 + Math.random() * 3;
-  if (TOON) animeize(r);
-  PEOPLE.push(r);
-  return r;
-}
+
 /* idle life: blink, breathe, swing the arms while walking */
 function animatePeople(t, dt) {
   for (let i = PEOPLE.length - 1; i >= 0; i--) {
@@ -2716,57 +2678,7 @@ function animatePeople(t, dt) {
     });
   }
 }
-function personFlat(o = {}) {
-  const skin = o.skin || SKIN, hair = o.hair || '#3B2A20', shirt = o.shirt || '#5B8DB8', pants = o.pants || '#3F4A5C';
-  const r = new THREE.Group();
-  if (o.robe) {
-    r.add(cyl(.3, .56, 1.2, shirt, 0, .6, 0, 10));
-    r.add(cyl(.315, .315, .09, o.belt || '#8A5A3B', 0, .82, 0, 10));
-    r.add(cyl(.2, .22, .2, o.collar || '#F3E6CB', 0, 1.22, .04, 8));
-  } else {
-    [-1, 1].forEach(s => { r.add(cyl(.11, .12, .5, pants, s * .14, .27, 0, 7)); r.add(scl(sph(.13, o.shoes || '#4A3528', s * .14, .05, .06, 8, 6), 1, .7, 1.3)); });
-    if (o.skirt) r.add(cone(.52, .55, o.skirt, 0, .6, 0, 10));
-    r.add(cyl(.27, .38, .72, shirt, 0, .86, 0, 10));
-  }
-  ['L', 'R'].forEach((side, k) => {
-    const s = k ? 1 : -1;
-    const a = new THREE.Group(); a.position.set(s * .34, 1.13, 0);
-    a.add(cyl(.085, .085, .46, o.sleeve || shirt, 0, -.23, 0, 6));
-    a.add(sph(.1, skin, 0, -.5, 0, 8, 6));
-    a.rotation.z = s * .2; r.add(a); r.userData['arm' + side] = a;
-  });
-  const h = new THREE.Group(); h.position.y = 1.62; r.add(h); r.userData.head = h;
-  h.add(sph(.47, skin, 0, 0, 0, 14, 11));
-  const eyes = [-1, 1].map(s => sph(.055, '#2B2320', s * .16, .03, .43, 8, 6));
-  eyes.forEach(e => h.add(e)); r.userData.eyes = eyes;
-  [-1, 1].forEach(s => h.add(scl(sph(.075, '#F2A2A0', s * .27, -.1, .36, 8, 6), 1, .8, .5)));
-  const mouth = tor(.07, .018, '#8E3B3B', 0, -.14, .44, Math.PI); mouth.rotation.z = Math.PI; h.add(mouth);
-  const st = o.hairStyle || 'short';
-  if (st !== 'bald' && st !== 'none') {
-    const cap = mk(G('haircap', () => new THREE.SphereGeometry(.5, 14, 10, 0, Math.PI * 2, 0, 1.3)), M(hair), 0, .03, -.03);
-    cap.rotation.x = -.5; h.add(cap);
-  }
-  if (st === 'bun') h.add(sph(.2, hair, 0, .38, -.3, 10, 8));
-  if (st === 'long') { h.add(box(.86, .8, .22, hair, 0, -.3, -.3)); }
-  if (st === 'twin') { h.add(sph(.17, hair, -.46, .05, -.12, 8, 6)); h.add(sph(.17, hair, .46, .05, -.12, 8, 6)); h.add(sph(.05, '#E24A6A', -.4, .18, -.02, 6, 4)); }
-  if (st === 'pony') { h.add(sph(.17, hair, 0, .2, -.5, 8, 6)); h.add(rot(cone(.14, .5, hair, 0, -.1, -.58, 6), .4, 0, 0)); }
-  if (st === 'topknot') { h.add(sph(.15, hair, 0, .52, -.05, 8, 6)); h.add(cyl(.07, .07, .06, o.band || '#C8453B', 0, .43, -.03, 6)); }
-  if (st === 'bald') { h.add(scl(sph(.16, hair, -.42, 0, -.08, 8, 6), 1, 1.3, 1.3)); h.add(scl(sph(.16, hair, .42, 0, -.08, 8, 6), 1, 1.3, 1.3)); h.add(scl(sph(.3, hair, 0, -.02, -.36, 8, 6), 1.3, 1, .6)); }
-  if (o.beard) { const b = cone(.2, .5, o.beard, 0, -.5, .28, 7); b.rotation.x = Math.PI - .25; h.add(b); }
-  if (o.mustache) { h.add(box(.28, .05, .05, o.mustache, 0, -.07, .46)); }
-  if (o.glasses) { [-1, 1].forEach(s => h.add(tor(.11, .022, '#5A4030', s * .16, .03, .47))); h.add(box(.1, .02, .02, '#5A4030', 0, .05, .48)); }
-  if (o.hat === 'official') { h.add(box(.62, .2, .56, '#2D2D2D', 0, .5, -.02)); h.add(box(1.2, .05, .08, '#2D2D2D', 0, .5, -.2)); }
-  if (o.hat === 'straw') { h.add(cyl(.82, .82, .04, '#D9B56B', 0, .35, 0, 14)); h.add(cyl(.28, .38, .3, '#D9B56B', 0, .5, 0, 10)); }
-  if (o.hat === 'cap') { h.add(scl(sph(.5, o.capColor || '#C8453B', 0, .1, 0, 12, 8), 1, .7, 1)); h.add(box(.5, .04, .35, o.capColor || '#C8453B', 0, .12, .45)); }
-  if (o.hat === 'helmet') {
-    h.add(mk(G('helm', () => new THREE.SphereGeometry(.64, 16, 12)), new THREE.MeshStandardMaterial({ color: col('#DFF1FF'), transparent: true, opacity: .32, roughness: .1 })));
-    h.add(tor(.5, .08, '#F2F2F2', 0, -.45, 0)); h.children[h.children.length - 1].rotation.x = Math.PI / 2;
-  }
-  if (o.pack) r.add(box(.5, .6, .3, o.pack, 0, .95, -.35));
-  if (o.s) r.scale.setScalar(o.s);
-  r.userData.kind = 'person';
-  return r;
-}
+
 function kid(o = {}) { return person(Object.assign({ s: .78 }, o)); }
 function holdR(p, obj, x = 0, y = -.55, z = .12) { obj.position.set(x, y, z); p.userData.armR.add(obj); p.userData.armR.rotation.x = -.7; return obj; }
 function holdL(p, obj, x = 0, y = -.55, z = .12) { obj.position.set(x, y, z); p.userData.armL.add(obj); p.userData.armL.rotation.x = -.7; return obj; }
@@ -2777,7 +2689,7 @@ function astronaut(o = {}) {
   return p;
 }
 /* ---------- nature & scenery ---------- */
-function tree() { const r = tree_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function tree() { const r = tree_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function tree_raw(o = {}) {
   // Ghibli-like tree: a tapered trunk with roots and a lush crown of soft round clumps, lighter on top
   const g = new THREE.Group(), s = o.s || 1, c = o.leaf || '#6E9E5B', c2 = o.leaf2 || c;
@@ -2789,17 +2701,17 @@ function tree_raw(o = {}) {
   if (o.fruit) for (let i = 0; i < 7; i++) g.add(sph(.1 * s, o.fruit, rand(-.7, .7) * s, rand(1.6, 2.6) * s, rand(.35, .8) * s, 10, 8));
   return g;
 }
-function pine() { const r = pine_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function pine() { const r = pine_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function pine_raw(o = {}) { const s = o.s || 1, c = o.c || '#4E7D52'; return grp(cyl(.1 * s, .15 * s, .7 * s, '#6B4430', 0, .35 * s, 0, 10), cone(.85 * s, 1.1 * s, c, 0, 1 * s, 0, 16), cone(.68 * s, 1 * s, lighten(c, .08), 0, 1.5 * s, 0, 16), cone(.48 * s, .9 * s, lighten(c, .16), 0, 2 * s, 0, 16)); }
-function bush() { const r = bush_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function bush() { const r = bush_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function bush_raw(c = '#6E9E5B', s = 1) { const l = lighten(c, .22); return grp(sph(.38 * s, c, 0, .3 * s, 0, 14, 10), sph(.3 * s, c, .35 * s, .24 * s, .1 * s, 14, 10), sph(.28 * s, c, -.33 * s, .22 * s, -.05 * s, 14, 10), sph(.22 * s, l, .08 * s, .52 * s, .08 * s, 12, 8), sph(.2 * s, l, -.2 * s, .45 * s, .14 * s, 12, 8)); }
-function grass() { const r = grass_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function grass() { const r = grass_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function grass_raw(c = '#7BB05A', s = 1) { const g = new THREE.Group(); for (let i = 0; i < 6; i++) g.add(rot(cone(.05 * s, (.35 + Math.random() * .2) * s, i % 2 ? c : lighten(c, .2), rand(-.13, .13) * s, .2 * s, rand(-.11, .11) * s, 6), rand(-.25, .25), 0, rand(-.35, .35))); return g; }
-function flower() { const r = flower_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function flower() { const r = flower_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function flower_raw(c = '#F28CA8', s = 1) { const g = grp(cyl(.022 * s, .026 * s, .5 * s, '#5E8C4A', 0, .25 * s, 0, 8)); for (let i = 0; i < 6; i++) { const a = i / 6 * Math.PI * 2; g.add(scl(sph(.07 * s, c, Math.cos(a) * .09 * s, .52 * s, Math.sin(a) * .09 * s, 10, 8), 1, .55, 1)); } g.add(sph(.05 * s, '#F6D25A', 0, .54 * s, 0, 10, 8)); g.add(rot(scl(sph(.07 * s, '#6E9E5B', .06 * s, .2 * s, 0, 10, 8), 1.6, .3, .7), 0, 0, .5)); return g; }
-function mountain() { const r = mountain_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function mountain() { const r = mountain_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function mountain_raw(c = '#7FA08A', h = 3, r = 2.2, snow) { const g = grp(cone(r, h, c, 0, h / 2, 0, 18), cone(r * .7, h * .55, lighten(c, .12), r * .08, h * .28, r * .12, 16)); if (snow) g.add(cone(r * .35, h * .35, '#F6F6F2', 0, h * .83, 0, 16)); return g; }
-function cloud() { const r = cloud_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function cloud() { const r = cloud_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function cloud_raw(c = '#FFFFFF', s = 1) { return grp(sph(.5 * s, c, 0, 0, 0, 8, 6), sph(.4 * s, c, .5 * s, -.05 * s, 0, 8, 6), sph(.38 * s, c, -.5 * s, -.08 * s, 0, 8, 6), sph(.32 * s, c, .2 * s, .28 * s, 0, 8, 6)); }
 function sunObj() { const r = sunObj_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
 function sunObj_raw(s = 1, c = '#F7C948') {
@@ -2810,7 +2722,7 @@ function sunObj_raw(s = 1, c = '#F7C948') {
 function moonObj() { const r = moonObj_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
 function moonObj_raw(s = 1) { return grp(sph(.8 * s, M('#FFF3C4', { emissive: '#FFE9A0', emissiveIntensity: .8 }), 0, 0, 0, 14, 10), sph(.12 * s, '#E9D9A0', .3 * s, .2 * s, .7 * s, 6, 4), sph(.09 * s, '#E9D9A0', -.25 * s, -.3 * s, .72 * s, 6, 4)); }
 function star(s = 1, c = '#FFF6C8') { return mk(G('star', () => new THREE.OctahedronGeometry(.12, 0)), M(c, { emissive: c, emissiveIntensity: .9 }), 0, 0, 0); }
-function rock() { const r = rock_raw.apply(this, arguments); r.userData.outdoor = true; return r; }
+function rock() { const r = rock_raw.apply(this, arguments); r.userData.outdoor = true; if (r.isGroup) mergeStatic(r); return r; }
 function rock_raw(s = 1, c = '#9A9690') { const g = grp(sph(.36, c, 0, .22, 0, 12, 9), sph(.2, lighten(c, .2), .06, .38, .04, 10, 8)); g.scale.set(s * rand(.9, 1.3), s * rand(.6, .9), s * rand(.9, 1.2)); g.rotation.y = rand(0, 3); return g; }
 function house(o = {}) {
   // Ghibli-like cottage: plaster walls with a timber frame, warm tiled gable roof with overhang, chimney,
@@ -9526,8 +9438,14 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) i
 /* ---------- bilingual interface: English after each Chinese button/label (toggle EN; on by default) ---------- */
 const HINT_EN = {"万寿山": "Longevity Hill", "中庭中间": "the middle of the courtyard", "中文学校": "the Chinese school", "乌龟": "the tortoise", "书": "the book", "书包": "the schoolbag", "书架": "the bookshelf", "云": "the cloud", "井": "the well", "井里的月亮": "the moon in the well", "体温计": "the thermometer", "信箱": "the mailbox", "信纸": "the letter paper", "公鸡": "the rooster", "农夫": "the farmer", "凡尔赛宫": "the Palace of Versailles", "北京": "Beijing", "医生": "the doctor", "医院": "the hospital", "十七孔桥": "the Seventeen-Arch Bridge", "十字河": "the cross-shaped canal", "古怪的老人": "the strange old man", "司马光": "Sima Guang", "唐人街牌楼": "the Chinatown gate", "图书角": "the reading corner", "地图": "the map", "大厅": "the hall", "大树": "the big tree", "大猴子": "the big monkey", "大石头": "the big stone", "大象": "the elephant", "大鼓": "the big drum", "天上的云": "the clouds in the sky", "太阳": "the sun", "奶奶": "Grandma", "妈妈手中的衣服": "the clothes in Mom's hands", "学校大门": "the school gate", "宇航员": "the astronaut", "安保人员": "the security guard", "家门": "the front door", "小兔": "the little rabbit", "小手": "the little hands", "小狗的家": "the puppy's house", "小猫": "the kitten", "小猫的家": "the kitten's house", "小羊": "the lamb", "小船": "the little boat", "小花园": "the little garden", "小草": "the little grass", "小蝌蚪": "the little tadpole", "小记者云云": "little reporter Yunyun", "小铲子": "the little shovel", "小马": "the little horse", "小鸟": "the little bird", "小鼓": "the little drum", "山下的人": "the people at the foot of the hill", "床": "the bed", "张衡": "Zhang Heng", "彩旗": "the colorful flags", "手指头": "the fingers", "拳头": "the fist", "指南针": "the compass", "收银台": "the checkout", "放羊的孩子": "the shepherd boy", "新衣服": "the new clothes", "星星": "the stars", "春天的太阳": "the spring sun", "晾衣绳": "the clothesline", "曹冲": "Cao Chong", "月亮": "the moon", "月历": "the calendar", "木船": "the wooden boat", "机器": "the machine", "李时珍": "Li Shizhen", "松鼠": "the squirrel", "校车": "the school bus", "椅子": "the chair", "毛笔": "the writing brush", "水壶": "the kettle", "水桶": "the bucket", "水缸": "the water vat", "池塘": "the pond", "汽车": "the car", "河水": "the river water", "河里的冰": "the ice on the river", "泥人": "the clay figures", "火热的太阳": "the blazing sun", "火箭": "the rocket", "灯笼": "the lanterns", "炉边的瓦特": "Watt by the stove", "烤箱": "the oven", "烤肉架": "the grill", "爱心": "the heart", "爷爷": "Grandpa", "狐狸": "the fox", "狼": "the wolf", "猴子们": "the monkeys", "玩具箱": "the toy box", "玩耍的孩子": "the children playing", "瓦特": "James Watt", "生活用品区": "the household goods aisle", "画家张僧繇": "the painter Zhang Sengyou", "画板": "the drawing board", "登月舱": "the lunar module", "白云": "the white clouds", "皮球": "the ball", "盖子": "the lid", "看病的父亲": "the sick father", "石块": "the stones", "礼物": "the present", "神舟九号": "Shenzhou 9", "神舟六号": "Shenzhou 6", "禾苗": "the young plants", "窗子": "the window", "童话书": "the fairy-tale book", "竹片": "the bamboo strips", "红包": "the red envelope", "红绿灯": "the traffic light", "纸": "the paper", "绘本": "the picture book", "老人的相机": "the old man's camera", "老师": "the teacher", "老牛": "the old ox", "舞狮": "the lion dance", "花丛": "the flowers", "花儿": "the flowers", "草丛": "the grass", "草药": "the herbs", "药": "the medicine", "药碗": "the medicine bowl", "葡萄": "the grapes", "葡萄架": "the grape trellis", "蔡伦": "Cai Lun", "蚂蚁": "the ants", "蛋糕": "the cake", "蜻蜓": "the dragonfly", "蝴蝶": "the butterfly", "讲台": "the teacher's platform", "试吃台": "the tasting stand", "贝聿铭": "I. M. Pei", "购物清单": "the shopping list", "购物车": "the shopping cart", "还没搭好的帐篷": "the tent that isn't up yet", "那条深色的裙子": "that dark skirt", "铁路": "the railway", "铅笔盒": "the pencil case", "长城": "the Great Wall", "长廊": "the Long Corridor", "门铃": "the doorbell", "问号": "the question mark", "降落伞": "the parachute", "雪": "the snow", "青蛙": "the frog", "颐和园": "the Summer Palace", "飞船": "the spaceship", "馆长": "the museum director", "马妈妈": "Mother Horse", "鹳雀楼": "the Stork Tower", "黄莺": "the oriole", "黑板": "the blackboard"};   // English names of the tap targets
 const QUIZ_EN = {"老师教“我们”什么？": "What does the teacher teach us?", "“我”喜欢学什么？": "What do I like to learn?", "教室前面是什么？": "What is at the front of the classroom?", "教室后边有什么？": "What is at the back of the classroom?", "星期六，谁来“我”家做客？": "Who visits my home on Saturday?", "云云做的饼干是什么形的？": "What shape are the cookies Yunyun makes?", "别人说“对不起”，你说什么？": "When someone says \"sorry\", what do you say?", "请别人坐下，要说什么？": "What do you say to ask someone to sit down?", "“我”几岁生日？": "How old am I on my birthday?", "哥哥和姐姐送给“我”什么？": "What do my brother and sister give me?", "小猫饿了，“我”会做什么？": "What do I do when the kitten is hungry?", "“我”会洗什么？": "What can I wash?", "看见红灯要怎么做？": "What should you do at a red light?", "看见绿灯要怎么做？": "What should you do at a green light?", "爸爸带“我”去哪儿？": "Where does Dad take me?", "“我”看了哪本书？": "Which book do I read?", "医生说“我”怎么了？": "What does the doctor say is wrong with me?", "回家后“我”做了什么？": "What do I do after I get home?", "种子说要做什么？": "What does the seed want to do?", "小朋友要种什么？": "What does the child want to plant?", "小蝌蚪当什么？": "What does the little tadpole become?", "谁当省略号？": "Who becomes the ellipsis?", "中国最长的江是什么江？": "What is the longest river in China?", "长江从哪儿流到哪儿？": "Where does the Yangtze flow from and to?"};
-const UI_EN = {"点卡片翻面，翻开后可以按喇叭听发音":"Tap a card to flip it, then tap the speaker to hear it","点卡片翻面，左右滑动或按按钮换下一张":"Tap the card to flip it; swipe or use the buttons for the next one","课堂游戏":"Class Game","练一练":"Exercises","听整段对话":"Play the whole dialogue","小测验": "Quiz", "做得好！可以翻到下一页了。": "Well done! You can turn to the next page.", "背景音乐：开": "Music: on", "背景音乐：关": "Music: off", "这一页": "This page", "好": "OK","看立体故事": "Pop-up Story", "课文": "Text", "生字": "Characters", "课后练习": "Practice", "游戏": "Games", "回书架": "Bookshelf", "书架": "Shelf", "课文跟读": "Read Along", "生字卡": "Cards", "转转看": "Look Around", "旁白": "Narrate", "对话跟读": "Dialogue", "整句": "Sentence", "分段": "Phrase", "逐字": "Word by Word", "语速": "Speed", "语速 ×": "Speed", "自动": "Auto", "自动 旁白": "Auto narrate", "下一页": "Next", "再看一次": "Replay", "点点看：": "Tap:", "回校园": "Campus", "徽章归零": "Reset Badges", "放学回家": "Go Home", "走进学校": "Enter School", "走进中文学校，选一册": "Walk into the Chinese school and pick a book", "想先做什么？": "What would you like to do?", "点一下校门，走进学校": "Tap the gate to enter the school", "点一栋教学楼，选一册": "Tap a building to pick a book", "关闭": "Close", "朗读全文": "Read All", "停止": "Stop", "游戏列表": "Games", "对话": "Dialogue", "卡片": "Cards", "翻卡": "Flip", "一张一张": "One by one", "全部": "All", "全部盖回": "Cover all", "拼音": "Pinyin", "注音": "Zhuyin", "不标": "None", "正面：拼音": "Front: pinyin", "正面：汉字": "Front: character", "再读一次": "Read again", "跟着念": "Repeat after me", "今天学得真棒！明天见": "Great job today! See you tomorrow", "再走进学校": "Enter again", "请用手机或浏览器上方的 ✕ 关闭这个页面": "Please close this page with the ✕ at the top of your browser", "点一下句子或词语，就会读出来": "Tap a sentence or word to hear it", "点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐": "Tap to start. The book reads aloud; ♪ at the top right turns on music", "句子": "Sentences", "读一读": "Read Aloud", "用一用": "Use the Words", "扩展与替换": "Expand & Substitute", "想一想，说一说": "Think & Talk", "专有名词": "Proper Nouns", "换一换，说一说": "Swap & Say", "换一册": "Change Book", "3D 游戏": "3D Games", "更多游戏": "More Games", "打地鼠": "Whack-a-Mole", "戳气球": "Pop the Balloons", "接水果": "Catch the Fruit", "场景寻宝": "Treasure Hunt", "记忆翻牌": "Memory Pairs", "声调快答": "Tone Drill", "取消": "Cancel", "五册全部归零": "Reset all five books", "看本课生字": "This lesson's characters", "听一听": "Listen", "再听一次": "Listen again"};
+const UI_EN = {"连词成句":"Build the Sentence","暨南《中文》": "Jinan Chinese · 3D Pop-up Picture Book", "的字是本课生字，都会标上拼音。": "Red characters are this lesson's new characters, all with pinyin.", "翻开两张，把字和拼音配成一对": "Flip two cards and match each character with its pinyin", "听发音，判断是第几声": "Listen and choose the tone", "连一连": "Match", "把前半和后半配成一个词": "Join the two halves into a word", "把打散的句子照课文排回来": "Put the mixed-up sentence back in order", "错字改正": "Fix the Wrong Character", "句子里藏了一个错字，把它找出来": "Find the wrong character hidden in the sentence", "看意思选词": "Meaning Match", "看英文意思，选出对应的词语": "Read the English meaning and pick the word", "听一听，敲中举着那个字的地鼠": "Listen, then whack the mole holding that character", "听一听，戳破写着那个字的气球": "Listen, then pop the balloon with that character", "移动篮子，接住写着那个字的水果": "Move the basket to catch the fruit with that character", "在故事场景里，找出藏着那个字的东西": "Find the thing in the scene that hides that character", "敲中了！": "Hit!", "戳中了！": "Popped!", "接到了！": "Caught!", "找到了！": "Found it!", "太好了！": "Great!", "真棒！": "Awesome!", "答对了！": "Correct!", "再想想看！": "Think again!", "听一听，点东西看看下面藏着什么字": "Listen, then tap things to see which character is hidden", "拖动或按 ◀ ▶ 移动篮子": "Drag or press ◀ ▶ to move the basket", "这一页东西太少，换一页再玩": "This page has too few things. Try another page.", "看意思选词 ": "Meaning Match","点卡片翻面，翻开后可以按喇叭听发音":"Tap a card to flip it, then tap the speaker to hear it","点卡片翻面，左右滑动或按按钮换下一张":"Tap the card to flip it; swipe or use the buttons for the next one","课堂游戏":"Class Game","练一练":"Exercises","听整段对话":"Play the whole dialogue","小测验": "Quiz", "做得好！可以翻到下一页了。": "Well done! You can turn to the next page.", "背景音乐：开": "Music: on", "背景音乐：关": "Music: off", "这一页": "This page", "好": "OK","看立体故事": "Pop-up Story", "课文": "Text", "生字": "Characters", "课后练习": "Practice", "游戏": "Games", "回书架": "Bookshelf", "书架": "Shelf", "课文跟读": "Read Along", "生字卡": "Cards", "转转看": "Look Around", "旁白": "Narrate", "对话跟读": "Dialogue", "整句": "Sentence", "分段": "Phrase", "逐字": "Word by Word", "语速": "Speed", "语速 ×": "Speed", "自动": "Auto", "自动 旁白": "Auto narrate", "下一页": "Next", "再看一次": "Replay", "点点看：": "Tap:", "回校园": "Campus", "徽章归零": "Reset Badges", "放学回家": "Go Home", "走进学校": "Enter School", "走进中文学校，选一册": "Walk into the Chinese school and pick a book", "想先做什么？": "What would you like to do?", "点一下校门，走进学校": "Tap the gate to enter the school", "点一栋教学楼，选一册": "Tap a building to pick a book", "关闭": "Close", "朗读全文": "Read All", "停止": "Stop", "游戏列表": "Games", "对话": "Dialogue", "卡片": "Cards", "翻卡": "Flip", "一张一张": "One by one", "全部": "All", "全部盖回": "Cover all", "拼音": "Pinyin", "注音": "Zhuyin", "不标": "None", "正面：拼音": "Front: pinyin", "正面：汉字": "Front: character", "再读一次": "Read again", "跟着念": "Repeat after me", "今天学得真棒！明天见": "Great job today! See you tomorrow", "再走进学校": "Enter again", "请用手机或浏览器上方的 ✕ 关闭这个页面": "Please close this page with the ✕ at the top of your browser", "点一下句子或词语，就会读出来": "Tap a sentence or word to hear it", "点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐": "Tap to start. The book reads aloud; ♪ at the top right turns on music", "句子": "Sentences", "读一读": "Read Aloud", "用一用": "Use the Words", "扩展与替换": "Expand & Substitute", "想一想，说一说": "Think & Talk", "专有名词": "Proper Nouns", "换一换，说一说": "Swap & Say", "换一册": "Change Book", "3D 游戏": "3D Games", "更多游戏": "More Games", "打地鼠": "Whack-a-Mole", "戳气球": "Pop the Balloons", "接水果": "Catch the Fruit", "场景寻宝": "Treasure Hunt", "记忆翻牌": "Memory Pairs", "声调快答": "Tone Drill", "取消": "Cancel", "五册全部归零": "Reset all five books", "看本课生字": "This lesson's characters", "听一听": "Listen", "再听一次": "Listen again"};
+const CN_DIGIT = t => { const d = '零一二三四五六七八九'; if (t === '十') return 10; if (t.length === 2 && t[0] === '十') return 10 + d.indexOf(t[1]); if (t.length === 2 && t[1] === '十') return d.indexOf(t[0]) * 10; if (t.length === 3) return d.indexOf(t[0]) * 10 + d.indexOf(t[2]); return d.indexOf(t); };
+const TITLE_PART = { '游戏': 'Games', '生字卡': 'Character Cards', '课后练习': 'Practice', '课文': 'Text', '课文跟读': 'Read Along', '小测验': 'Quiz' };
 const EN_PATTERNS = [
+  [/^第([一二三四五六七八九十]+)课\s+(.+)$/, m => 'Lesson ' + CN_DIGIT(m[1]) + ' · ' + (TITLE_PART[m[2]] || ((typeof DATA !== 'undefined' && DATA.find(x => x.t === m[2]) || {}).en) || '')],
+  [/^(\d+)\/(\d+) · 敲中 (\d+)$/, 'Round $1/$2 · Hits $3'], [/^(\d+) 次敲中 (\d+) 次$/, '$2 hits in $1 tries'],
+  [/^戳中 (\d+) \/ (\d+)$/, 'Popped $1 / $2'], [/^接到 (\d+) \/ (\d+)$/, 'Caught $1 / $2'], [/^找到 (\d+) \/ (\d+)$/, 'Found $1 / $2'],
+  [/^戳中了 (\d+) 个气球$/, 'You popped $1 balloons'], [/^接到了 (\d+) 个水果$/, 'You caught $1 pieces of fruit'], [/^找到了全部 (\d+) 个字$/, 'You found all $1 characters'],
   [/^全部盖回（(\d+)）$/, 'Cover all ($1)'], [/^生字（(\d+)）$/, 'Characters ($1)'], [/^词语（(\d+)）$/, 'Words ($1)'],
   [/^小测验\s*第\s*(\d+)\s*题，共\s*(\d+)\s*题$/, 'Quiz · Question $1 of $2'],
   [/^点一本书开始读\s*已收集\s*(\d+)\s*[／/]\s*(\d+)\s*枚徽章$/, 'Tap a book to start · $1 of $2 badges collected'],
@@ -9543,7 +9461,7 @@ const enOf = t => {
   const d = typeof DATA !== 'undefined' && DATA.find(x => x.t === t); if (d && d.en) return d.en;   // lesson titles (chips, menus)
   return null;
 };
-const NO_EN = '#narr,#bubbles,#pracBody,#lineBox,#readList,#cardGrid,#loader,.en,.bub,#quizBox .opts,#quizQ,#bookTitle,#gloss,.hl';
+const NO_EN = '#narr,#bubbles,#pracBody,#lineBox,#readList,#cardGrid,#loader,.en,.bub,#quizBox .opts,#quizQ,#bookTitle,#gloss,.hl,#bldLabels';
 const GLOSS_READY = () => !!window.__glossReady;   // the word list is built a little later during start-up
 const pinyinOf = w => { try { return [...w].map(c => charPy(c)).join(' '); } catch (e) { return ''; } };
 function bilingual() {
@@ -9628,7 +9546,7 @@ function runStep(k) {
 
 /* ---------- the little owl's English tips (only when EN is on; each tip once per visit) ---------- */
 const COACH = {
-  campus: 'Tap a building to choose a book. Book 1 is the easiest!',
+  campus: 'Tap a building to choose a book. Book 1, on the far left, is the easiest. Start there!',
   shelf: 'Tap a book on the shelf to open a lesson.',
   menu: 'Try the guided path: press the big red button and follow the steps.',
   story: 'Listen to the story. Tap any Chinese character to see what it means. Then tap the glowing thing in the scene!',
@@ -9751,7 +9669,24 @@ function orderQ(B, toks, answers, src) {
   shuffled(toks).forEach(t => row.appendChild(opt(t, b => { if (b.classList.contains('used')) return; b.classList.add('used'); picked.push([t, b]); built.textContent = picked.map(x => x[0]).join(' ');
     if (picked.length === toks.length) { const got = strip(picked.map(x => x[0]).join('')), ok = answers.some(a => strip(a) === got); exResult(q, ok, ok ? '对了！' + answers[0] : '不对，再试一次。', ok ? 'Correct!' : 'Not quite. Try again.'); if (ok) Voice.say(answers[0]); else setTimeout(() => { picked.splice(0).forEach(x => x[1].classList.remove('used')); built.textContent = ''; }, 900); } })));
 }
+function checkZhVoice() {
+  if (!('speechSynthesis' in window) || store.get('zw.voiceTip', 0)) return;
+  const look = () => { const vs = speechSynthesis.getVoices(); if (!vs.length) return false;
+    if (!vs.some(v => /^(zh|cmn)/i.test(v.lang))) {
+      const ua = navigator.userAgent, how = /iPhone|iPad|Mac/i.test(ua) ? ['设置 → 辅助功能 → 朗读内容 → 声音 → 中文', 'Settings → Accessibility → Spoken Content → Voices → Chinese']
+        : /Android/i.test(ua) ? ['设置 → 文字转语音 → 安装中文语音（Google 语音服务）', 'Settings → Text-to-speech → install Chinese (Google Speech Services)']
+        : /Windows/i.test(ua) ? ['设置 → 时间和语言 → 语音 → 添加中文语音', 'Settings → Time & language → Speech → add a Chinese voice'] : ['在系统设置里添加中文语音', 'Add a Chinese voice in your system settings'];
+      const d = document.createElement('div'); d.id = 'voiceTip'; d.setAttribute('role', 'alert');
+      d.innerHTML = '<b>这台设备没有中文语音，所以听不到朗读。</b><span class="en" lang="en">This device has no Chinese voice, so the reading is silent.</span><p></p><p class="e" lang="en"></p><button class="btn">知道了<span class="en" lang="en">OK</span></button>';
+      d.querySelectorAll('p')[0].textContent = '添加方法：' + how[0]; d.querySelectorAll('p')[1].textContent = 'How to add one: ' + how[1];
+      d.querySelector('button').onclick = () => { store.set('zw.voiceTip', 1); d.remove(); }; document.body.appendChild(d);
+    }
+    return true; };
+  if (!look()) { speechSynthesis.addEventListener && speechSynthesis.addEventListener('voiceschanged', () => look(), { once: true }); setTimeout(look, 3000); }
+}
 boot();
+setTimeout(checkZhVoice, 2500);
+if ('serviceWorker' in navigator && location.protocol === 'https:') navigator.serviceWorker.register('sw.js').catch(() => { });   // offline copy (needs sw.js next to index.html)
 setTimeout(() => { if (!store.get('zw.tour3', 0)) startTour(0); }, 1600);   // after the opening animation (once; the ? button shows it again)
 setTimeout(() => { const l = $('loader'); if (l) { l.classList.add('done'); setTimeout(() => l.remove(), 700); } $('intro').classList.add('play'); }, 250);   // the book is ready: the opening plays
 
