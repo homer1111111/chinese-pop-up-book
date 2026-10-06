@@ -8,7 +8,7 @@
 <meta property="og:image" content="https://homer1111111.github.io/chinese-pop-up-book/og-image.jpg">
 <meta property="og:image:width" content="1200"><meta property="og:image:height" content="630">
 <meta name="twitter:card" content="summary_large_image">
-<meta name="app-version" content="2026-10-06d">
+<meta name="app-version" content="2026-10-07a">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>《中文》第一至五册 立体有声绘本</title>
@@ -357,6 +357,15 @@ body.locked .lockable{opacity:.45;pointer-events:none}
 #campusBar{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);z-index:20;background:var(--paper);border-radius:22px;padding:10px 22px;font-size:20px;box-shadow:0 6px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap}
 #fader{position:fixed;inset:0;z-index:60;background:#FFF8EC;opacity:0;pointer-events:none;display:none}
 #fader.on{display:block}
+/* guide on/off right on the start screen, always visible */
+#intro .guideSw{display:flex;align-items:center;justify-content:center;gap:8px;margin:14px auto 4px;flex-wrap:wrap;opacity:0}
+#intro.play .guideSw{animation:fadeUp .7s 1.3s ease forwards}
+#intro .guideSw .gl{color:#FBF3E2;font-size:16px;text-shadow:0 1px 3px rgba(0,0,0,.4)}
+#intro .guideSw .gl{text-align:right;line-height:1.2}#intro .guideSw .gl .en{display:none}body.en-on #intro .guideSw .gl .en{display:block;margin:0;font-size:11px;color:#FBF3E2}
+#intro .guideSw button{border:0;border-radius:18px;padding:6px 14px;font-family:inherit;font-size:16px;background:rgba(251,243,226,.35);color:#FBF3E2;cursor:pointer}
+#intro .guideSw button.on{background:#FBF3E2;color:#C8453B;font-weight:700;box-shadow:0 2px 0 rgba(0,0,0,.2)}
+#intro .guideSw button .en{color:inherit}
+@media (prefers-reduced-motion:reduce){#intro .guideSw{opacity:1;animation:none}}
 /* readable book labels floating over the five buildings (yard only); tapping one opens that book */
 #bldLabels{position:fixed;inset:0;z-index:12;pointer-events:none}
 #bldLabels .bl{position:absolute;transform:translate(-50%,-100%);pointer-events:auto;border:0;border-radius:12px;padding:3px 7px 3px;color:#fff;font-size:clamp(13px,3.6vw,18px);line-height:1.1;text-align:center;box-shadow:0 3px 0 rgba(0,0,0,.18),0 6px 14px rgba(0,0,0,.18);cursor:pointer;white-space:nowrap}
@@ -385,6 +394,8 @@ body:not(.en-on) #path .st small{display:none}
 #coach .ow{flex:none;width:34px;height:34px;border-radius:50%;background:#9C6B45;position:relative}
 #coach .ow::before,#coach .ow::after{content:'';position:absolute;top:9px;width:11px;height:11px;border-radius:50%;background:#fff;box-shadow:inset 0 0 0 3.5px #1E1612}
 #coach .ow::before{left:5px}#coach .ow::after{right:5px}
+#coach{flex-wrap:wrap}
+#coach .off{flex-basis:100%;margin:4px 0 0 44px;border:0;background:none;padding:0;text-align:left;font-family:var(--ui);font-size:12px;color:#534AB7;text-decoration:underline;cursor:pointer}
 #coach .x{flex:none;border:0;background:none;color:#534AB7;font-size:18px;cursor:pointer;padding:0 2px}
 /* first-visit tour */
 #tour{position:fixed;inset:0;z-index:95;background:rgba(20,12,6,.55);display:flex;align-items:center;justify-content:center;padding:20px}
@@ -831,6 +842,7 @@ body.en-on #pracBody .len{display:block}
   <div class="vol">暨南《中文》</div>
   <h1><span class="rise">立</span><span class="rise">体</span><span class="rise">绘</span><span class="rise">本</span><small>走进中文学校，选一册</small></h1>
   <button class="btn main" id="startBtn">走进学校</button>
+  <div class="guideSw" role="group" aria-label="小猫头鹰导览 Owl guide"><span class="gl">小猫头鹰导览<span class="en" lang="en">Owl guide</span></span><button type="button" data-g="1">有导览<span class="en" lang="en">On</span></button><button type="button" data-g="0">不要导览<span class="en" lang="en">Off</span></button></div>
   <div class="note">点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐</div>
 </div>
 <div id="loadErr" class="hidden">需要连上网络才能载入 3D 引擎（three.js、GSAP）。<br>请确认网络连接后刷新这一页。</div>
@@ -885,7 +897,7 @@ const wait = ms => new Promise(r => setTimeout(r, ms))
   .then(() => (typeof APP !== 'undefined' && APP.gate) ? Voice.idle() : null);   // gate: see runHot()
 const REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
 const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
-function tw(target, vars) { return new Promise(res => { const oc = vars.onComplete; gsap.to(target, Object.assign({}, vars, { onComplete() { if (oc) oc(); res(); } })); }); }
+function tw(target, vars) { return new Promise(res => { const oc = vars.onComplete; gsap.to(target, Object.assign({}, vars, { onComplete() { if (oc) oc(); res(); }, onInterrupt() { res(); } })); }); }   // settles when finished OR killed
 const store = {
   get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
   set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) { } }
@@ -941,7 +953,7 @@ const Sound = (() => {
     noiseBuf = ctx.createBuffer(1, ctx.sampleRate * 2, ctx.sampleRate);
     const d = noiseBuf.getChannelData(0);
     for (let i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
-    timer = setInterval(tick, 420);
+    if (musicOn) timer = setInterval(tick, 420);
   }
   function tone(freq, t, dur, type = 'sine', vol = .3, dest = sfxGain, attack = .01, glideTo = null) {
     const o = ctx.createOscillator(), g = ctx.createGain();
@@ -982,6 +994,7 @@ const Sound = (() => {
   function setMood(semi) { root = semi || 0; }
   function setMusic(on) {
     musicOn = on; store.set('zw.bgm2', on);
+    if (ctx && on && !timer) timer = setInterval(tick, 420); if (!on && timer) { clearInterval(timer); timer = 0; }   // no idle clock while music is off
     if (ctx) musicGain.gain.setTargetAtTime(on ? (ducked ? 0 : .2) : 0, ctx.currentTime, .15);
   }
   /* speech on: music goes fully silent. Speech off: music comes back only after a short pause,
@@ -2300,7 +2313,7 @@ function updateBubbles() {
     if (!b.shown) continue;
     const ay = b.obj.userData.anchorY;
     if (ay != null) { b.obj.getWorldPosition(_v); _v.y += ay; }   // a fixed point above the owl: its wings and sway do not move the bubble
-    else { _box.setFromObject(b.obj); _box.getCenter(_v); _v.y = _box.max.y + b.dy; }
+    else { b.obj.getWorldPosition(_v); if (!b.off || ++b.offN % 15 === 0) { _box.setFromObject(b.obj); const c = _box.getCenter(new THREE.Vector3()); b.off = { x: c.x - _v.x, y: _box.max.y + b.dy - _v.y, z: c.z - _v.z }; b.offN = b.offN || 0; } _v.x += b.off.x; _v.y += b.off.y; _v.z += b.off.z; }   // box measured every 15 frames
     _v.project(camera);
     let x = (_v.x * .5 + .5) * innerWidth, y = (-_v.y * .5 + .5) * innerHeight;
     if (b.sx != null && Math.abs(x - b.sx) < 60 && Math.abs(y - b.sy) < 60) { x = b.sx + (x - b.sx) * .18; y = b.sy + (y - b.sy) * .18; }   // smooth out small wobbles (breathing, hovering)
@@ -2443,7 +2456,9 @@ function tapChar(o) {
 }
 /* hover on the shelf */
 let hovered = null;
-renderer.domElement.addEventListener('pointermove', e => {
+let hoverEv = null;
+renderer.domElement.addEventListener('pointermove', e => { const first = !hoverEv; hoverEv = e; if (first) requestAnimationFrame(() => { const ev = hoverEv; hoverEv = null; onHover(ev); }); });   // one ray test per frame, however fast the mouse moves
+function onHover(e) {
   parallax.tx = (e.clientX / innerWidth - .5); parallax.ty = (e.clientY / innerHeight - .5);
   // the custom cursor ring grows over 3D things you can tap: campus gate/buildings, the page's hotspot, characters
   APP.hoverHot = false;
@@ -2463,7 +2478,7 @@ renderer.domElement.addEventListener('pointermove', e => {
   if (b) { tip.textContent = '第' + CN_NUM[b.userData.n] + '课　' + byN(b.userData.n).t; tip.style.left = e.clientX + 'px'; tip.style.top = e.clientY + 'px'; tip.classList.remove('hidden'); }
   else tip.classList.add('hidden');
   renderer.domElement.style.cursor = b ? 'pointer' : 'default';
-});
+}
 
 /* =====================================================================
    Cursor glow trail (2D canvas)
@@ -2523,7 +2538,11 @@ function placeBldLabels() {
     el.style.left = ((p.x * .5 + .5) * innerWidth) + 'px'; el.style.top = ((-p.y * .5 + .5) * innerHeight) + 'px'; });
 }
 function frame() {
-  requestAnimationFrame(frame); watchFps(performance.now()); placeBldLabels();
+  requestAnimationFrame(frame); placeBldLabels();
+  // a full-screen dialog (practice, reader, cards, games list...) covers the scene: draw it only a few times a second,
+  // so scrolling and tapping inside the dialog stay smooth on phones
+  if (APP.overlay && document.querySelector('.veil:not(.hidden)')) { const now = performance.now(); if (now - (frame.last || 0) < 250) return; frame.last = now; FPS.start = now; }
+  else watchFps(performance.now());
   if (PUPIL) PUPIL.visible = !OB.visible;   // never in the picture of an open book
   if (window.__g3on) return;          // a 3D mini-game is drawing; the book scene waits
   const dt = Math.min(clock.getDelta(), .05), t = clock.elapsedTime;
@@ -8257,7 +8276,7 @@ function mark(u) {
   if (first) first.scrollIntoView({ block: readMode === 'char' ? 'nearest' : 'center', behavior: REDUCED ? 'auto' : 'smooth' });
   return el;
 }
-const speakP = t => new Promise(r => Voice.speak(t, r));
+const speakP = t => new Promise(r => { let ok = false; const fin = () => { if (!ok) { ok = true; r(); } }; Voice.speak(t, fin); setTimeout(fin, Math.max(8000, t.length * 900)); });   // a cancelled reading still settles
 function readStop() { readRun++; readActive = null; Voice.cancel(); mark(null); $('followBtn').classList.remove('main'); $('playAll').classList.add('main'); }
 function readOne(u) { const my = ++readRun; mark(u); speakP(unitText(u)).then(() => { if (my === readRun) mark(null); }); }
 async function readFrom(start, follow) {
@@ -8493,7 +8512,7 @@ function gMemory(box, run) {
 /* 声调快答: hear the character, see its pinyin without tone mark, pick the tone */
 function gTone(box, run) {
   const chars = byN(gameN).chars.filter(c => !/\s/.test(c[1]));
-  const items = []; while (items.length < 10) items.push(...shuffle(chars.slice()));
+  const items = []; while (items.length < 10 && chars.length) items.push(...shuffle(chars.slice()));   // never loop forever on an empty list
   const list = items.slice(0, 10), hasNeutral = list.some(c => toneOf(c[1]) === 5);
   let i = 0, score = 0;
   const TONES = [[1, 'ˉ', '一声'], [2, 'ˊ', '二声'], [3, 'ˇ', '三声'], [4, 'ˋ', '四声']].concat(hasNeutral ? [[5, '˙', '轻声']] : []);
@@ -8762,6 +8781,7 @@ function g3Mount(box, o = {}) {
   return { sc, W, H };
 }
 function g3Stop() {
+  if (G3.keyOff) { G3.keyOff(); G3.keyOff = null; }
   cancelAnimationFrame(G3.raf); G3.raf = 0; G3.ups = []; G3.onTap = null; G3.onMove = null; window.__g3on = false;
   if (G3.scene) {
     G3.scene.traverse(o => { if (o.material && o.material.userData && o.material.userData.g3) { if (o.material.map) o.material.map.dispose(); o.material.dispose(); } });
@@ -8926,7 +8946,7 @@ function gCatch(box, run) {
   });
   const kd = e => { if (e.key === 'ArrowLeft') keyDir = -1; else if (e.key === 'ArrowRight') keyDir = 1; };
   const ku = e => { if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') keyDir = 0; };
-  window.addEventListener('keydown', kd); window.addEventListener('keyup', ku);
+  window.addEventListener('keydown', kd); window.addEventListener('keyup', ku); G3.keyOff = () => { window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); };
   G3.ups.push((dt, t) => {
     if (!g3Alive(run)) { window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); ctl.remove(); return false; }
     if (keyDir) bx += keyDir * 7 * dt;
@@ -9433,12 +9453,14 @@ new MutationObserver(ms => { for (const m of ms) for (const n of m.addedNodes) i
     ring.classList.toggle('hot', hot); }, { passive: true });
   addEventListener('pointerdown', () => ring.classList.add('down')); addEventListener('pointerup', () => ring.classList.remove('down'));
   document.addEventListener('mouseleave', () => { dot.style.opacity = ring.style.opacity = 0; }); document.addEventListener('mouseenter', () => { dot.style.opacity = ring.style.opacity = 1; });
-  (function follow() { rx += (x - rx) * .2; ry += (y - ry) * .2; ring.style.transform = `translate(${rx}px,${ry}px)`; requestAnimationFrame(follow); })();
+  let running = false;
+  const follow = () => { rx += (x - rx) * .2; ry += (y - ry) * .2; ring.style.transform = `translate(${rx}px,${ry}px)`; if (Math.abs(x - rx) + Math.abs(y - ry) > .5) requestAnimationFrame(follow); else running = false; };
+  addEventListener('pointermove', () => { if (!running) { running = true; requestAnimationFrame(follow); } }, { passive: true });   // the ring only animates while it is catching up
 })();
 /* ---------- bilingual interface: English after each Chinese button/label (toggle EN; on by default) ---------- */
 const HINT_EN = {"万寿山": "Longevity Hill", "中庭中间": "the middle of the courtyard", "中文学校": "the Chinese school", "乌龟": "the tortoise", "书": "the book", "书包": "the schoolbag", "书架": "the bookshelf", "云": "the cloud", "井": "the well", "井里的月亮": "the moon in the well", "体温计": "the thermometer", "信箱": "the mailbox", "信纸": "the letter paper", "公鸡": "the rooster", "农夫": "the farmer", "凡尔赛宫": "the Palace of Versailles", "北京": "Beijing", "医生": "the doctor", "医院": "the hospital", "十七孔桥": "the Seventeen-Arch Bridge", "十字河": "the cross-shaped canal", "古怪的老人": "the strange old man", "司马光": "Sima Guang", "唐人街牌楼": "the Chinatown gate", "图书角": "the reading corner", "地图": "the map", "大厅": "the hall", "大树": "the big tree", "大猴子": "the big monkey", "大石头": "the big stone", "大象": "the elephant", "大鼓": "the big drum", "天上的云": "the clouds in the sky", "太阳": "the sun", "奶奶": "Grandma", "妈妈手中的衣服": "the clothes in Mom's hands", "学校大门": "the school gate", "宇航员": "the astronaut", "安保人员": "the security guard", "家门": "the front door", "小兔": "the little rabbit", "小手": "the little hands", "小狗的家": "the puppy's house", "小猫": "the kitten", "小猫的家": "the kitten's house", "小羊": "the lamb", "小船": "the little boat", "小花园": "the little garden", "小草": "the little grass", "小蝌蚪": "the little tadpole", "小记者云云": "little reporter Yunyun", "小铲子": "the little shovel", "小马": "the little horse", "小鸟": "the little bird", "小鼓": "the little drum", "山下的人": "the people at the foot of the hill", "床": "the bed", "张衡": "Zhang Heng", "彩旗": "the colorful flags", "手指头": "the fingers", "拳头": "the fist", "指南针": "the compass", "收银台": "the checkout", "放羊的孩子": "the shepherd boy", "新衣服": "the new clothes", "星星": "the stars", "春天的太阳": "the spring sun", "晾衣绳": "the clothesline", "曹冲": "Cao Chong", "月亮": "the moon", "月历": "the calendar", "木船": "the wooden boat", "机器": "the machine", "李时珍": "Li Shizhen", "松鼠": "the squirrel", "校车": "the school bus", "椅子": "the chair", "毛笔": "the writing brush", "水壶": "the kettle", "水桶": "the bucket", "水缸": "the water vat", "池塘": "the pond", "汽车": "the car", "河水": "the river water", "河里的冰": "the ice on the river", "泥人": "the clay figures", "火热的太阳": "the blazing sun", "火箭": "the rocket", "灯笼": "the lanterns", "炉边的瓦特": "Watt by the stove", "烤箱": "the oven", "烤肉架": "the grill", "爱心": "the heart", "爷爷": "Grandpa", "狐狸": "the fox", "狼": "the wolf", "猴子们": "the monkeys", "玩具箱": "the toy box", "玩耍的孩子": "the children playing", "瓦特": "James Watt", "生活用品区": "the household goods aisle", "画家张僧繇": "the painter Zhang Sengyou", "画板": "the drawing board", "登月舱": "the lunar module", "白云": "the white clouds", "皮球": "the ball", "盖子": "the lid", "看病的父亲": "the sick father", "石块": "the stones", "礼物": "the present", "神舟九号": "Shenzhou 9", "神舟六号": "Shenzhou 6", "禾苗": "the young plants", "窗子": "the window", "童话书": "the fairy-tale book", "竹片": "the bamboo strips", "红包": "the red envelope", "红绿灯": "the traffic light", "纸": "the paper", "绘本": "the picture book", "老人的相机": "the old man's camera", "老师": "the teacher", "老牛": "the old ox", "舞狮": "the lion dance", "花丛": "the flowers", "花儿": "the flowers", "草丛": "the grass", "草药": "the herbs", "药": "the medicine", "药碗": "the medicine bowl", "葡萄": "the grapes", "葡萄架": "the grape trellis", "蔡伦": "Cai Lun", "蚂蚁": "the ants", "蛋糕": "the cake", "蜻蜓": "the dragonfly", "蝴蝶": "the butterfly", "讲台": "the teacher's platform", "试吃台": "the tasting stand", "贝聿铭": "I. M. Pei", "购物清单": "the shopping list", "购物车": "the shopping cart", "还没搭好的帐篷": "the tent that isn't up yet", "那条深色的裙子": "that dark skirt", "铁路": "the railway", "铅笔盒": "the pencil case", "长城": "the Great Wall", "长廊": "the Long Corridor", "门铃": "the doorbell", "问号": "the question mark", "降落伞": "the parachute", "雪": "the snow", "青蛙": "the frog", "颐和园": "the Summer Palace", "飞船": "the spaceship", "馆长": "the museum director", "马妈妈": "Mother Horse", "鹳雀楼": "the Stork Tower", "黄莺": "the oriole", "黑板": "the blackboard"};   // English names of the tap targets
 const QUIZ_EN = {"老师教“我们”什么？": "What does the teacher teach us?", "“我”喜欢学什么？": "What do I like to learn?", "教室前面是什么？": "What is at the front of the classroom?", "教室后边有什么？": "What is at the back of the classroom?", "星期六，谁来“我”家做客？": "Who visits my home on Saturday?", "云云做的饼干是什么形的？": "What shape are the cookies Yunyun makes?", "别人说“对不起”，你说什么？": "When someone says \"sorry\", what do you say?", "请别人坐下，要说什么？": "What do you say to ask someone to sit down?", "“我”几岁生日？": "How old am I on my birthday?", "哥哥和姐姐送给“我”什么？": "What do my brother and sister give me?", "小猫饿了，“我”会做什么？": "What do I do when the kitten is hungry?", "“我”会洗什么？": "What can I wash?", "看见红灯要怎么做？": "What should you do at a red light?", "看见绿灯要怎么做？": "What should you do at a green light?", "爸爸带“我”去哪儿？": "Where does Dad take me?", "“我”看了哪本书？": "Which book do I read?", "医生说“我”怎么了？": "What does the doctor say is wrong with me?", "回家后“我”做了什么？": "What do I do after I get home?", "种子说要做什么？": "What does the seed want to do?", "小朋友要种什么？": "What does the child want to plant?", "小蝌蚪当什么？": "What does the little tadpole become?", "谁当省略号？": "Who becomes the ellipsis?", "中国最长的江是什么江？": "What is the longest river in China?", "长江从哪儿流到哪儿？": "Where does the Yangtze flow from and to?"};
-const UI_EN = {"连词成句":"Build the Sentence","暨南《中文》": "Jinan Chinese · 3D Pop-up Picture Book", "的字是本课生字，都会标上拼音。": "Red characters are this lesson's new characters, all with pinyin.", "翻开两张，把字和拼音配成一对": "Flip two cards and match each character with its pinyin", "听发音，判断是第几声": "Listen and choose the tone", "连一连": "Match", "把前半和后半配成一个词": "Join the two halves into a word", "把打散的句子照课文排回来": "Put the mixed-up sentence back in order", "错字改正": "Fix the Wrong Character", "句子里藏了一个错字，把它找出来": "Find the wrong character hidden in the sentence", "看意思选词": "Meaning Match", "看英文意思，选出对应的词语": "Read the English meaning and pick the word", "听一听，敲中举着那个字的地鼠": "Listen, then whack the mole holding that character", "听一听，戳破写着那个字的气球": "Listen, then pop the balloon with that character", "移动篮子，接住写着那个字的水果": "Move the basket to catch the fruit with that character", "在故事场景里，找出藏着那个字的东西": "Find the thing in the scene that hides that character", "敲中了！": "Hit!", "戳中了！": "Popped!", "接到了！": "Caught!", "找到了！": "Found it!", "太好了！": "Great!", "真棒！": "Awesome!", "答对了！": "Correct!", "再想想看！": "Think again!", "听一听，点东西看看下面藏着什么字": "Listen, then tap things to see which character is hidden", "拖动或按 ◀ ▶ 移动篮子": "Drag or press ◀ ▶ to move the basket", "这一页东西太少，换一页再玩": "This page has too few things. Try another page.", "看意思选词 ": "Meaning Match","点卡片翻面，翻开后可以按喇叭听发音":"Tap a card to flip it, then tap the speaker to hear it","点卡片翻面，左右滑动或按按钮换下一张":"Tap the card to flip it; swipe or use the buttons for the next one","课堂游戏":"Class Game","练一练":"Exercises","听整段对话":"Play the whole dialogue","小测验": "Quiz", "做得好！可以翻到下一页了。": "Well done! You can turn to the next page.", "背景音乐：开": "Music: on", "背景音乐：关": "Music: off", "这一页": "This page", "好": "OK","看立体故事": "Pop-up Story", "课文": "Text", "生字": "Characters", "课后练习": "Practice", "游戏": "Games", "回书架": "Bookshelf", "书架": "Shelf", "课文跟读": "Read Along", "生字卡": "Cards", "转转看": "Look Around", "旁白": "Narrate", "对话跟读": "Dialogue", "整句": "Sentence", "分段": "Phrase", "逐字": "Word by Word", "语速": "Speed", "语速 ×": "Speed", "自动": "Auto", "自动 旁白": "Auto narrate", "下一页": "Next", "再看一次": "Replay", "点点看：": "Tap:", "回校园": "Campus", "徽章归零": "Reset Badges", "放学回家": "Go Home", "走进学校": "Enter School", "走进中文学校，选一册": "Walk into the Chinese school and pick a book", "想先做什么？": "What would you like to do?", "点一下校门，走进学校": "Tap the gate to enter the school", "点一栋教学楼，选一册": "Tap a building to pick a book", "关闭": "Close", "朗读全文": "Read All", "停止": "Stop", "游戏列表": "Games", "对话": "Dialogue", "卡片": "Cards", "翻卡": "Flip", "一张一张": "One by one", "全部": "All", "全部盖回": "Cover all", "拼音": "Pinyin", "注音": "Zhuyin", "不标": "None", "正面：拼音": "Front: pinyin", "正面：汉字": "Front: character", "再读一次": "Read again", "跟着念": "Repeat after me", "今天学得真棒！明天见": "Great job today! See you tomorrow", "再走进学校": "Enter again", "请用手机或浏览器上方的 ✕ 关闭这个页面": "Please close this page with the ✕ at the top of your browser", "点一下句子或词语，就会读出来": "Tap a sentence or word to hear it", "点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐": "Tap to start. The book reads aloud; ♪ at the top right turns on music", "句子": "Sentences", "读一读": "Read Aloud", "用一用": "Use the Words", "扩展与替换": "Expand & Substitute", "想一想，说一说": "Think & Talk", "专有名词": "Proper Nouns", "换一换，说一说": "Swap & Say", "换一册": "Change Book", "3D 游戏": "3D Games", "更多游戏": "More Games", "打地鼠": "Whack-a-Mole", "戳气球": "Pop the Balloons", "接水果": "Catch the Fruit", "场景寻宝": "Treasure Hunt", "记忆翻牌": "Memory Pairs", "声调快答": "Tone Drill", "取消": "Cancel", "五册全部归零": "Reset all five books", "看本课生字": "This lesson's characters", "听一听": "Listen", "再听一次": "Listen again"};
+const UI_EN = {"导览已关闭，开头画面可以再打开":"Guide turned off. You can turn it on again on the start screen.","连词成句":"Build the Sentence","暨南《中文》": "Jinan Chinese · 3D Pop-up Picture Book", "的字是本课生字，都会标上拼音。": "Red characters are this lesson's new characters, all with pinyin.", "翻开两张，把字和拼音配成一对": "Flip two cards and match each character with its pinyin", "听发音，判断是第几声": "Listen and choose the tone", "连一连": "Match", "把前半和后半配成一个词": "Join the two halves into a word", "把打散的句子照课文排回来": "Put the mixed-up sentence back in order", "错字改正": "Fix the Wrong Character", "句子里藏了一个错字，把它找出来": "Find the wrong character hidden in the sentence", "看意思选词": "Meaning Match", "看英文意思，选出对应的词语": "Read the English meaning and pick the word", "听一听，敲中举着那个字的地鼠": "Listen, then whack the mole holding that character", "听一听，戳破写着那个字的气球": "Listen, then pop the balloon with that character", "移动篮子，接住写着那个字的水果": "Move the basket to catch the fruit with that character", "在故事场景里，找出藏着那个字的东西": "Find the thing in the scene that hides that character", "敲中了！": "Hit!", "戳中了！": "Popped!", "接到了！": "Caught!", "找到了！": "Found it!", "太好了！": "Great!", "真棒！": "Awesome!", "答对了！": "Correct!", "再想想看！": "Think again!", "听一听，点东西看看下面藏着什么字": "Listen, then tap things to see which character is hidden", "拖动或按 ◀ ▶ 移动篮子": "Drag or press ◀ ▶ to move the basket", "这一页东西太少，换一页再玩": "This page has too few things. Try another page.", "看意思选词 ": "Meaning Match","点卡片翻面，翻开后可以按喇叭听发音":"Tap a card to flip it, then tap the speaker to hear it","点卡片翻面，左右滑动或按按钮换下一张":"Tap the card to flip it; swipe or use the buttons for the next one","课堂游戏":"Class Game","练一练":"Exercises","听整段对话":"Play the whole dialogue","小测验": "Quiz", "做得好！可以翻到下一页了。": "Well done! You can turn to the next page.", "背景音乐：开": "Music: on", "背景音乐：关": "Music: off", "这一页": "This page", "好": "OK","看立体故事": "Pop-up Story", "课文": "Text", "生字": "Characters", "课后练习": "Practice", "游戏": "Games", "回书架": "Bookshelf", "书架": "Shelf", "课文跟读": "Read Along", "生字卡": "Cards", "转转看": "Look Around", "旁白": "Narrate", "对话跟读": "Dialogue", "整句": "Sentence", "分段": "Phrase", "逐字": "Word by Word", "语速": "Speed", "语速 ×": "Speed", "自动": "Auto", "自动 旁白": "Auto narrate", "下一页": "Next", "再看一次": "Replay", "点点看：": "Tap:", "回校园": "Campus", "徽章归零": "Reset Badges", "放学回家": "Go Home", "走进学校": "Enter School", "走进中文学校，选一册": "Walk into the Chinese school and pick a book", "想先做什么？": "What would you like to do?", "点一下校门，走进学校": "Tap the gate to enter the school", "点一栋教学楼，选一册": "Tap a building to pick a book", "关闭": "Close", "朗读全文": "Read All", "停止": "Stop", "游戏列表": "Games", "对话": "Dialogue", "卡片": "Cards", "翻卡": "Flip", "一张一张": "One by one", "全部": "All", "全部盖回": "Cover all", "拼音": "Pinyin", "注音": "Zhuyin", "不标": "None", "正面：拼音": "Front: pinyin", "正面：汉字": "Front: character", "再读一次": "Read again", "跟着念": "Repeat after me", "今天学得真棒！明天见": "Great job today! See you tomorrow", "再走进学校": "Enter again", "请用手机或浏览器上方的 ✕ 关闭这个页面": "Please close this page with the ✕ at the top of your browser", "点一下句子或词语，就会读出来": "Tap a sentence or word to hear it", "点一下开始，会有朗读声音；右上角 ♪ 可以打开背景音乐": "Tap to start. The book reads aloud; ♪ at the top right turns on music", "句子": "Sentences", "读一读": "Read Aloud", "用一用": "Use the Words", "扩展与替换": "Expand & Substitute", "想一想，说一说": "Think & Talk", "专有名词": "Proper Nouns", "换一换，说一说": "Swap & Say", "换一册": "Change Book", "3D 游戏": "3D Games", "更多游戏": "More Games", "打地鼠": "Whack-a-Mole", "戳气球": "Pop the Balloons", "接水果": "Catch the Fruit", "场景寻宝": "Treasure Hunt", "记忆翻牌": "Memory Pairs", "声调快答": "Tone Drill", "取消": "Cancel", "五册全部归零": "Reset all five books", "看本课生字": "This lesson's characters", "听一听": "Listen", "再听一次": "Listen again"};
 const CN_DIGIT = t => { const d = '零一二三四五六七八九'; if (t === '十') return 10; if (t.length === 2 && t[0] === '十') return 10 + d.indexOf(t[1]); if (t.length === 2 && t[1] === '十') return d.indexOf(t[0]) * 10; if (t.length === 3) return d.indexOf(t[0]) * 10 + d.indexOf(t[2]); return d.indexOf(t); };
 const TITLE_PART = { '游戏': 'Games', '生字卡': 'Character Cards', '课后练习': 'Practice', '课文': 'Text', '课文跟读': 'Read Along', '小测验': 'Quiz' };
 const EN_PATTERNS = [
@@ -9464,8 +9486,9 @@ const enOf = t => {
 const NO_EN = '#narr,#bubbles,#pracBody,#lineBox,#readList,#cardGrid,#loader,.en,.bub,#quizBox .opts,#quizQ,#bookTitle,#gloss,.hl,#bldLabels';
 const GLOSS_READY = () => !!window.__glossReady;   // the word list is built a little later during start-up
 const pinyinOf = w => { try { return [...w].map(c => charPy(c)).join(' '); } catch (e) { return ''; } };
-function bilingual() {
-  document.querySelectorAll('body *').forEach(e => {
+function bilingual(root = document.body) {
+  [root, ...root.querySelectorAll('*')].forEach(e => {
+    if (e === document.body) return;
     if (/^(SCRIPT|STYLE|CANVAS|svg|path|INPUT)$/.test(e.tagName) || e.closest(NO_EN)) return;
     let t = ''; e.childNodes.forEach(n => { if (n.nodeType === 3) t += n.textContent; });
     t = t.trim();
@@ -9483,12 +9506,17 @@ function bilingual() {
   });
 }
 let enQueued = false;
-new MutationObserver(() => { if (enQueued) return; enQueued = true; requestAnimationFrame(() => { enQueued = false; bilingual(); }); })
-  .observe(document.body, { childList: true, subtree: true, characterData: true });
+const enRoots = new Set();
+new MutationObserver(ms => { for (const m of ms) { const t = m.target.nodeType === 1 ? m.target : m.target.parentElement; if (t && !t.closest('.en')) enRoots.add(t); }
+    if (enQueued) return; enQueued = true; requestAnimationFrame(() => { enQueued = false; const roots = [...enRoots]; enRoots.clear(); roots.forEach(r => r.isConnected && bilingual(r)); }); })
+  .observe(document.body, { childList: true, subtree: true, characterData: true });   // only the changed parts are re-labelled
 function setEn(on) { document.body.classList.toggle('en-on', on); $('enBtn').setAttribute('aria-pressed', on); $('enBtn').textContent = on ? 'EN' : 'EN'; store.set('zw.en', on); }
 $('enBtn').onclick = () => { Sound.init(); Sound.play('click'); setEn(!document.body.classList.contains('en-on')); };
 setEn(store.get('zw.en', true)); bilingual();
 { const row = $('narr').parentNode; row.after($('trBtn')); $('trBtn').after($('narrEn')); }   // their own lines under the text row
+function syncGuideSw() { document.querySelectorAll('#intro .guideSw button').forEach(b => b.classList.toggle('on', (b.dataset.g === '1') === guideOn())); }
+document.querySelectorAll('#intro .guideSw button').forEach(b => b.onclick = e => { e.stopPropagation(); Sound.init(); Sound.play('click'); store.set('zw.guide', b.dataset.g === '1'); syncGuideSw(); });
+setTimeout(syncGuideSw, 0);   // after the guide setting helpers are defined
 $('helpBtn').onclick = () => { Sound.init(); Sound.play('click'); if (!$('tour')) startTour(0); };
 $('trBtn').onclick = e => { e.stopPropagation(); Sound.play('click'); APP.trOn = !APP.trOn; $('trBtn').classList.toggle('on', APP.trOn); $('narrEn').classList.toggle('hidden', !APP.trOn || !$('narrEn').textContent); layoutView(true); };
 /* ---------- word card: tap any character in the texts to see the word, its pinyin and English meaning ---------- */
@@ -9567,8 +9595,9 @@ function coachSay(key, force, after) {
   if (!guideOn() || !document.body.classList.contains('en-on') || !COACH[key] || (!force && coachSeen.has(key)) || $('tour')) return;
   coachSeen.add(key);
   let c = $('coach'); if (!c) { c = document.createElement('div'); c.id = 'coach'; c.setAttribute('role', 'status'); c.lang = 'en'; document.body.appendChild(c); }
-  c.innerHTML = '<span class="ow"></span><span class="t"></span><button class="x" aria-label="close">✕</button>'; c.querySelector('.t').textContent = COACH[key];
+  c.innerHTML = '<span class="ow"></span><span class="t"></span><button class="x" aria-label="close">✕</button><button class="off" type="button">以后不要导览 · Turn off the guide</button>'; c.querySelector('.t').textContent = COACH[key];
   c.querySelector('.x').onclick = () => c.remove();
+  c.querySelector('.off').onclick = () => { Sound.play('click'); store.set('zw.guide', false); syncGuideSw(); try { speechSynthesis.cancel(); } catch (e) { } c.remove(); toast('导览已关闭，开头画面可以再打开'); };   // turn the guide off from any tip
   if (after) { let done = false; const go = () => { if (!done) { done = true; after(); } }; setTimeout(go, 9000);   // never wait forever
     try { const u = new SpeechSynthesisUtterance(COACH[key]); u.lang = 'en-US'; u.rate = .95; const v = speechSynthesis.getVoices().find(x => /^en(-|_)US/i.test(x.lang)) || speechSynthesis.getVoices().find(x => /^en/i.test(x.lang)); if (v) u.voice = v; u.onend = () => setTimeout(go, 250); u.onerror = go; speechSynthesis.cancel(); speechSynthesis.speak(u); } catch (e) { go(); } }
   else if (!Voice.busy || !Voice.busy()) setTimeout(() => enSpeak(COACH[key]), 300);
@@ -9605,7 +9634,7 @@ function startTour(i = 0) {
   // only the EN switch gets a ring: it sits above the card (the start button is hidden behind it)
   ['enBtn'].forEach(id => { const el = $(id); if (!el) return; const r = el.getBoundingClientRect(), ring = document.createElement('div'); ring.className = 'tourRing'; Object.assign(ring.style, { left: r.left - 8 + 'px', top: r.top - 8 + 'px', width: r.width + 16 + 'px', height: r.height + 16 + 'px' }); document.body.appendChild(ring); });
   paintIcons(t);
-  const choose = on => { Sound.init(); Sound.play('click'); store.set('zw.guide', on); startTour(1); };
+  const choose = on => { Sound.init(); Sound.play('click'); store.set('zw.guide', on); syncGuideSw(); startTour(1); };
   $('tourGuide').onclick = () => choose(true); $('tourNoGuide').onclick = () => choose(false);
   (store.get('zw.guide', true) ? $('tourGuide') : $('tourNoGuide')).classList.add('main'); (store.get('zw.guide', true) ? $('tourNoGuide') : $('tourGuide')).classList.remove('main');
   $('tourSay').onclick = () => { Sound.init(); tourSpeak(); };
